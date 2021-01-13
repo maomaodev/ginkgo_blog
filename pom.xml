@@ -19,6 +19,7 @@
         <module>ginkgo_blog_utils</module>
         <module>ginkgo_blog_base</module>
         <module>ginkgo_blog_commons</module>
+        <module>ginkgo_blog_admin</module>
     </modules>
 
     <properties>
