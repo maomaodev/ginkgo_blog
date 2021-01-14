@@ -15,9 +15,9 @@ import java.util.Date;
 @TableName("t_admin")
 public class Admin extends SuperEntity {
     /**
-     * 用户名
+     * 管理员名
      */
-    private String username;
+    private String name;
 
     /**
      * 密码

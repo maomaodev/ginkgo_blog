@@ -21,7 +21,7 @@ public class SuperEntity {
      * 是否删除，0表示未删除，1表示删除
      */
     @TableLogic
-    private Boolean deleted;
+    private Boolean isDelete;
 
     /**
      * 创建时间
