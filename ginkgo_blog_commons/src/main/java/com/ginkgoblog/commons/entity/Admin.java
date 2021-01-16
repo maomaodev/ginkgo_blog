@@ -7,6 +7,8 @@ import lombok.EqualsAndHashCode;
 import java.util.Date;
 
 /**
+ * 管理员实体
+ *
  * @author maomao
  * @date 2021-01-12
  */
@@ -90,7 +92,7 @@ public class Admin extends SuperEntity {
     private String resume;
 
     /**
-     * 角色 id
+     * 角色id
      */
     private String roleId;
 
@@ -105,7 +107,7 @@ public class Admin extends SuperEntity {
     private Date lastLoginTime;
 
     /**
-     * 最后登录 IP
+     * 最后登录ip
      */
     private String lastLoginIp;
 }

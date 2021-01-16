@@ -24,7 +24,7 @@ create table `t_admin` (
     `summary` varchar(255) comment '自我介绍',
     `resume` text comment '履历',
     `role_id` char(32) comment '角色id',
-    `login_count` unsigned int default 0 comment '登录次数',
+    `login_count` int unsigned default 0 comment '登录次数',
     `last_login_time` datetime comment '最后登录时间',
     `last_login_ip` varchar(255) comment '最后登录ip',
     `is_delete` bool default 0 comment '是否删除，0:否，1:是',
@@ -69,41 +69,6 @@ create table `t_category_menu` (
 ) engine = InnoDB default charset = utf8 comment = '菜单类别表';
 
 
-/* table structure for table `t_user` */
-drop table if exists `t_user`;
-
-create table `t_user` (
-    `id` char(32) comment '用户id',
-    `name` varchar(255) not null comment '用户名',
-    `password` char(60) not null comment '密码',
-    `nickname` varchar(255) comment '昵称',
-    `gender` tinyint(1) comment '性别，0:女，1:男',
-    `birthday` date comment '出生日期',
-    `avatar` varchar(255) comment '头像',
-    `phone_number` char(11) comment '手机号',
-    `qq` varchar(255) comment 'QQ',
-    `wechat` varchar(255) comment '微信',
-    `email` varchar(255) comment '邮箱',
-    `valid_code` varchar(255) comment '验证码',
-    `occupation` varchar(255) comment '职业',
-    `summary` varchar(255) comment '自我介绍',
-    `login_count` unsigned int default 0 comment '登录次数',
-    `last_login_time` datetime comment '最后登录时间',
-    `last_login_ip` varchar(255) comment '最后登录ip',
-    `ip_source` varchar(255) comment 'ip来源',
-    `browser` varchar(255) comment '浏览器',
-    `os` varchar(255) comment '操作系统',
-    `source` varchar(255) comment '账号来源',
-    `platform_id` varchar(255) comment '平台id',
-    `is_comment` bool default 1 comment '是否开启评论，0:禁言，1:正常',
-    `is_email_notify` bool default 0 comment '是否开启邮件通知，0:否，1:是',
-    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
-    `create_time` datetime default now() comment '创建时间',
-    `update_time` datetime default now() comment '更新时间',
-    primary key (`id`)
-) engine = InnoDB default charset = utf8 comment = '用户表';
-
-
 /* table structure for table `t_blog` */
 drop table if exists `t_blog`;
 
@@ -121,7 +86,7 @@ create table t_blog (
     `picture_id` char(32) comment '标题图片id',
     `admin_id` char(32) comment '管理员id',
     `blog_sort_id` char(32) comment '博客分类id',
-    `is_publish` bool 1 comment '是否发布，0:否，1:是',
+    `is_publish` bool default 1 comment '是否发布，0:否，1:是',
     `is_original` bool default 1 comment '是否原创，0:否，1:是',
     `is_comment` bool default 1 comment '是否开启评论，0:否，1:是',
     `is_delete` bool default 0 comment '是否删除，0:否，1:是',
@@ -198,12 +163,105 @@ create table t_collect (
     `id` char(32) comment '收藏id',
     `user_id` char(32) not null comment '用户id',
     `blog_id` char(32) not null comment '博客id',
+    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
     `create_time` datetime default now() comment '创建时间',
     `update_time` datetime default now() comment '更新时间',
     primary key (`id`)
 ) engine = InnoDB default charset = utf8 comment = '收藏表';
 
 
+/* table structure for table `t_user` */
+drop table if exists `t_user`;
+
+create table `t_user` (
+    `id` char(32) comment '用户id',
+    `name` varchar(255) not null comment '用户名',
+    `password` char(60) not null comment '密码',
+    `nickname` varchar(255) comment '昵称',
+    `gender` tinyint(1) comment '性别，0:女，1:男',
+    `birthday` date comment '出生日期',
+    `avatar` varchar(255) comment '头像',
+    `phone_number` char(11) comment '手机号',
+    `qq` varchar(255) comment 'QQ',
+    `wechat` varchar(255) comment '微信',
+    `email` varchar(255) comment '邮箱',
+    `valid_code` varchar(255) comment '验证码',
+    `occupation` varchar(255) comment '职业',
+    `summary` varchar(255) comment '自我介绍',
+    `login_count` int unsigned default 0 comment '登录次数',
+    `last_login_time` datetime comment '最后登录时间',
+    `last_login_ip` varchar(255) comment '最后登录ip',
+    `ip_source` varchar(255) comment 'ip来源',
+    `browser` varchar(255) comment '浏览器',
+    `os` varchar(255) comment '操作系统',
+    `source` varchar(255) comment '账号来源',
+    `platform_id` varchar(255) comment '平台id',
+    `is_comment` bool default 1 comment '是否开启评论，0:禁言，1:正常',
+    `is_email_notify` bool default 0 comment '是否开启邮件通知，0:否，1:是',
+    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
+    `create_time` datetime default now() comment '创建时间',
+    `update_time` datetime default now() comment '更新时间',
+    primary key (`id`)
+) engine = InnoDB default charset = utf8 comment = '用户表';
 
 
+/* table structure for table `t_comment` */
+drop table if exists `t_comment`;
+
+create table t_comment (
+    `id` char(32) comment '评论id',
+    `user_id` char(32) comment '用户id',
+    `first_comment_id` char(32) comment '一级评论id',
+    `to_comment_id` char(32) comment '回复某条评论的id',
+    `to_user_id` char(32) comment '回复某个人的id',
+    `blog_id` char(32) comment '博客id',
+    `content` varchar(1024) comment '评论内容',
+    `source` varchar(255) comment '评论来源',
+    `type` tinyint default 0 comment '评论类型，0:评论，1:点赞',
+    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
+    `create_time` datetime default now() comment '创建时间',
+    `update_time` datetime default now() comment '更新时间',
+    primary key (`id`)
+) engine = InnoDB default charset = utf8 comment = '评论表';
+
+
+/* table structure for table `t_system_log` */
+drop table if exists `t_system_log`;
+
+create table t_system_log (
+    `id` char(32) comment '系统日志id',
+    `username` varchar(255) not null comment '用户名',
+    `ip` varchar(255) comment '请求ip',
+    `url` varchar(255) comment '请求url',
+    `type` varchar(255) comment '请求方式',
+    `path` varchar(255) comment '请求类路径',
+    `method` varchar(255) comment '请求方法',
+    `params` varchar(255) comment '请求参数',
+    `description` varchar(255) comment '请求描述',
+    `ip_source` varchar(255) comment 'ip来源',
+    `duration` int unsigned default 0 comment '请求花费的时间',
+    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
+    `create_time` datetime default now() comment '创建时间',
+    `update_time` datetime default now() comment '更新时间',
+    primary key (`id`)
+) engine = InnoDB default charset = utf8 comment = '系统日志表';
+
+
+/* table structure for table `t_exception_log` */
+drop table if exists `t_exception_log`;
+
+create table t_exception_log (
+    `id` char(32) comment '异常日志id',
+    `json` text comment '异常对象json格式',
+    `message` text comment '异常信息',
+    `ip` varchar(255) comment '请求ip',
+    `method` varchar(255) comment '请求方法',
+    `params` varchar(255) comment '请求参数',
+    `description` varchar(255) comment '请求描述',
+    `ip_source` varchar(255) comment 'ip来源',
+    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
+    `create_time` datetime default now() comment '创建时间',
+    `update_time` datetime default now() comment '更新时间',
+    primary key (`id`)
+) engine = InnoDB default charset = utf8 comment = '异常日志表';
 

@@ -18,7 +18,7 @@ public class SuperEntity {
     private String id;
 
     /**
-     * 是否删除，0表示未删除，1表示删除
+     * 是否删除，0:删除，1:删除
      */
     @TableLogic
     private Boolean isDelete;

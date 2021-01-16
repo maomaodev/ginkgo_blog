@@ -7,9 +7,9 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="ginkgo_blog_commons" />
-        <module name="ginkgo_blog_utils" />
-        <module name="ginkgo_blog_base" />
         <module name="ginkgo_blog_admin" />
+        <module name="ginkgo_blog_base" />
+        <module name="ginkgo_blog_utils" />
         <module name="ginkgo_blog_web" />
       </profile>
     </annotationProcessing>
