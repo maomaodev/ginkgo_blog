@@ -72,7 +72,7 @@ create table `t_category_menu` (
 /* table structure for table `t_blog` */
 drop table if exists `t_blog`;
 
-create table t_blog (
+create table `t_blog` (
     `id` char(32) comment '博客id',
     `title` varchar(255) comment '博客标题',
     `content` longtext not null comment '博客内容',
@@ -99,7 +99,7 @@ create table t_blog (
 /* table structure for table `t_blog_sort` */
 drop table if exists `t_blog_sort`;
 
-create table t_blog_sort (
+create table `t_blog_sort` (
     `id` char(32) comment '博客分类id',
     `name` varchar(255) comment '博客分类名',
     `content` varchar(255) comment '分类简介',
@@ -115,7 +115,7 @@ create table t_blog_sort (
 /* table structure for table `t_tag` */
 drop table if exists `t_tag`;
 
-create table t_tag (
+create table `t_tag` (
     `id` char(32) comment '博客标签id',
     `name` varchar(255) comment '标签名',
     `click_count` int default 0 comment '标签点击数',
@@ -130,7 +130,7 @@ create table t_tag (
 /* table structure for table `t_picture` */
 drop table if exists `t_picture`;
 
-create table t_picture (
+create table `t_picture` (
     `id` char(32) comment '图片id',
     `name` varchar(255) comment '图片名',
     `picture_sort_id` char(32) comment '图片分类id',
@@ -144,7 +144,7 @@ create table t_picture (
 /* table structure for table `t_picture_sort` */
 drop table if exists `t_picture_sort`;
 
-create table t_picture_sort (
+create table `t_picture_sort` (
     `id` char(32) comment '图片分类id',
     `name` varchar(255) comment '图片分类名',
     `order` int default 0 comment '排序字段，越大越靠前',
@@ -159,7 +159,7 @@ create table t_picture_sort (
 /* table structure for table `t_collect` */
 drop table if exists `t_collect`;
 
-create table t_collect (
+create table `t_collect` (
     `id` char(32) comment '收藏id',
     `user_id` char(32) not null comment '用户id',
     `blog_id` char(32) not null comment '博客id',
@@ -196,7 +196,7 @@ create table `t_user` (
     `os` varchar(255) comment '操作系统',
     `source` varchar(255) comment '账号来源',
     `platform_id` varchar(255) comment '平台id',
-    `is_comment` bool default 1 comment '是否开启评论，0:禁言，1:正常',
+    `is_comment` bool default 1 comment '是否开启评论，0:否，1:是',
     `is_email_notify` bool default 0 comment '是否开启邮件通知，0:否，1:是',
     `is_delete` bool default 0 comment '是否删除，0:否，1:是',
     `create_time` datetime default now() comment '创建时间',
@@ -208,7 +208,7 @@ create table `t_user` (
 /* table structure for table `t_comment` */
 drop table if exists `t_comment`;
 
-create table t_comment (
+create table `t_comment` (
     `id` char(32) comment '评论id',
     `user_id` char(32) comment '用户id',
     `first_comment_id` char(32) comment '一级评论id',
@@ -228,7 +228,7 @@ create table t_comment (
 /* table structure for table `t_system_log` */
 drop table if exists `t_system_log`;
 
-create table t_system_log (
+create table `t_system_log` (
     `id` char(32) comment '系统日志id',
     `username` varchar(255) not null comment '用户名',
     `ip` varchar(255) comment '请求ip',
@@ -250,7 +250,7 @@ create table t_system_log (
 /* table structure for table `t_exception_log` */
 drop table if exists `t_exception_log`;
 
-create table t_exception_log (
+create table `t_exception_log` (
     `id` char(32) comment '异常日志id',
     `json` text comment '异常对象json格式',
     `message` text comment '异常信息',

@@ -6,6 +6,8 @@ import lombok.Data;
 import java.util.Date;
 
 /**
+ * 实体父类
+ *
  * @author maomao
  * @date 2021-01-12
  */
