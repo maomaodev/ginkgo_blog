@@ -13,7 +13,7 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("t_exception_log")
-public class ExceptionLog extends SuperEntity{
+public class ExceptionLog extends SuperEntity {
     /**
      * 异常对象json格式
      */
