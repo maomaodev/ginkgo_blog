@@ -1,8 +1,13 @@
 package com.ginkgoblog.commons.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ginkgoblog.base.entity.SuperEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -19,47 +24,28 @@ public class User extends SuperEntity {
     /**
      * 用户名
      */
-    private String name;
+    private String userName;
 
     /**
      * 密码
      */
-    private String password;
+    private String passWord;
 
     /**
      * 昵称
      */
-    private String nickname;
+    private String nickName;
 
     /**
-     * 性别，0:女，1:男
+     * 性别(1:男2:女)
      */
-    private Integer gender;
+    private String gender;
 
     /**
-     * 出生日期
+     * 个人头像(UID)
      */
-    private Date birthday;
-
-    /**
-     * 头像
-     */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String avatar;
-
-    /**
-     * 手机号
-     */
-    private String phoneNumber;
-
-    /**
-     * QQ
-     */
-    private String qq;
-
-    /**
-     * 微信
-     */
-    private String wechat;
 
     /**
      * 邮箱
@@ -67,12 +53,34 @@ public class User extends SuperEntity {
     private String email;
 
     /**
+     * 出生年月日
+     */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date birthday;
+
+    /**
+     * 手机
+     */
+    private String mobile;
+
+    /**
+     * QQ号
+     */
+    private String qqNumber;
+
+    /**
+     * 微信号
+     */
+    private String weChat;
+
+    /**
      * 职业
      */
     private String occupation;
 
     /**
-     * 自我介绍
+     * 自我简介最多150字
      */
     private String summary;
 
@@ -82,24 +90,36 @@ public class User extends SuperEntity {
     private Integer loginCount;
 
     /**
+     * 资料来源
+     */
+    private String source;
+
+    /**
+     * 平台uuid
+     */
+    private String uuid;
+
+    /**
      * 最后登录时间
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date lastLoginTime;
 
     /**
-     * 最后登录ip
+     * 最后登录IP
      */
     private String lastLoginIp;
 
     /**
-     * ip来源
+     * 评论状态，0 禁言， 1 正常
      */
-    private String ipSource;
+    private Integer commentStatus;
 
     /**
-     * 浏览器
+     * 开启邮件通知：  0：关闭， 1：开启
      */
-    private String browser;
+    private Integer startEmailNotification;
 
     /**
      * 操作系统
@@ -107,22 +127,25 @@ public class User extends SuperEntity {
     private String os;
 
     /**
-     * 账号来源
+     * 浏览器
      */
-    private String source;
+    private String browser;
 
     /**
-     * 平台id
+     * ip来源
      */
-    private String platformId;
+    private String ipSource;
 
     /**
-     * 是否开启评论，0:否，1:是
+     * 用户标签  0：普通，1：管理员，2：博主
      */
-    private Boolean isComment;
+    private Integer userTag;
+
+    // 以下字段不存入数据库，封装为了方便使用
 
     /**
-     * 是否开启邮件通知，0:否，1:是
+     * 用户头像
      */
-    private Boolean isEmailNotify;
+    @TableField(exist = false)
+    private String photoUrl;
 }

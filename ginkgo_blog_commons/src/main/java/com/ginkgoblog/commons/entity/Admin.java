@@ -1,10 +1,15 @@
 package com.ginkgoblog.commons.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ginkgoblog.base.entity.SuperEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
+import java.util.List;
 
 /**
  * 管理员表
@@ -17,59 +22,34 @@ import java.util.Date;
 @TableName("t_admin")
 public class Admin extends SuperEntity {
     /**
-     * 管理员名
+     * 用户名
      */
-    private String name;
+    private String userName;
+
+    /**
+     * 角色Uid
+     */
+    private String roleUid;
 
     /**
      * 密码
      */
-    private String password;
+    private String passWord;
 
     /**
      * 昵称
      */
-    private String nickname;
+    private String nickName;
 
     /**
-     * 性别，0:女，1:男
+     * 性别(1:男2:女)
      */
-    private Integer gender;
+    private String gender;
 
     /**
-     * 出生日期
-     */
-    private Date birthday;
-
-    /**
-     * 头像
+     * 个人头像
      */
     private String avatar;
-
-    /**
-     * 手机号
-     */
-    private String phoneNumber;
-
-    /**
-     * QQ
-     */
-    private String qq;
-
-    /**
-     * 微信
-     */
-    private String wechat;
-
-    /**
-     * GitHub
-     */
-    private String github;
-
-    /**
-     * Gitee
-     */
-    private String gitee;
 
     /**
      * 邮箱
@@ -77,24 +57,41 @@ public class Admin extends SuperEntity {
     private String email;
 
     /**
+     * 出生年月日
+     */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    private Date birthday;
+
+    /**
+     * 手机
+     */
+    private String mobile;
+
+    /**
+     * QQ号
+     */
+    private String qqNumber;
+
+    /**
+     * 微信号
+     */
+    private String weChat;
+
+    /**
      * 职业
      */
     private String occupation;
 
     /**
-     * 自我介绍
+     * 自我简介最多150字
      */
     private String summary;
 
     /**
-     * 履历
+     * 个人履历（Markdown）
      */
-    private String resume;
-
-    /**
-     * 角色id
-     */
-    private String roleId;
+    private String personResume;
 
     /**
      * 登录次数
@@ -104,10 +101,48 @@ public class Admin extends SuperEntity {
     /**
      * 最后登录时间
      */
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date lastLoginTime;
 
     /**
-     * 最后登录ip
+     * 最后登录IP
      */
     private String lastLoginIp;
+
+    /**
+     * github地址
+     */
+    private String github;
+
+    /**
+     * gitee地址
+     */
+    private String gitee;
+
+    // 以下字段不存入数据库，封装为了方便使用
+
+    /**
+     * 用户头像
+     */
+    @TableField(exist = false)
+    private List<String> photoList;
+
+    /**
+     * 所拥有的角色名
+     */
+    @TableField(exist = false)
+    private List<String> roleNames;
+
+    /**
+     * 所拥有的角色名
+     */
+    @TableField(exist = false)
+    private Role role;
+
+    /**
+     * 验证码
+     */
+    @TableField(exist = false)
+    private String validCode;
 }

@@ -1,6 +1,9 @@
 package com.ginkgoblog.commons.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ginkgoblog.base.entity.SuperEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -15,18 +18,19 @@ import lombok.EqualsAndHashCode;
 @TableName("t_role")
 public class Role extends SuperEntity {
     /**
-     * 角色名
+     * 角色名称
      */
-    private String name;
+    private String roleName;
 
     /**
-     * 角色介绍
+     * 介绍
      */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
     private String summary;
 
     /**
-     * 角色管辖的菜单id
+     * 该角色所能管辖的区域
      */
-    private String categoryMenuIds;
-
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
+    private String categoryMenuUids;
 }

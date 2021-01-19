@@ -1,267 +1,343 @@
-create database `ginkgo_blog`;
+CREATE DATABASE `ginkgo_blog`;
 
-use `ginkgo_blog`;
+USE `ginkgo_blog`;
 
-/* table structure for table `t_admin` */
-drop table if exists `t_admin`;
+/*Table structure for table `t_admin` */
 
-create table `t_admin` (
-    `id` char(32) comment '管理员id',
-    `name` varchar(255) not null comment '管理员名',
-    `password` char(60) not null comment '密码',
-    `nickname` varchar(255) comment '昵称',
-    `gender` tinyint(1) comment '性别，0:女，1:男',
-    `birthday` date comment '出生日期',
-    `avatar` varchar(255) comment '头像',
-    `phone_number` char(11) comment '手机号',
-    `qq` varchar(255) comment 'QQ',
-    `wechat` varchar(255) comment '微信',
-    `github` varchar(255) comment 'GitHub',
-    `gitee` varchar(255) comment 'Gitee',
-    `email` varchar(255) comment '邮箱',
-    `valid_code` varchar(255) comment '验证码',
-    `occupation` varchar(255) comment '职业',
-    `summary` varchar(255) comment '自我介绍',
-    `resume` text comment '履历',
-    `role_id` char(32) comment '角色id',
-    `login_count` int unsigned default 0 comment '登录次数',
-    `last_login_time` datetime comment '最后登录时间',
-    `last_login_ip` varchar(255) comment '最后登录ip',
-    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
-    `create_time` datetime default now() comment '创建时间',
-    `update_time` datetime default now() comment '更新时间',
-    primary key (`id`)
-) engine = InnoDB default charset = utf8 comment = '管理员表';
+DROP TABLE IF EXISTS `t_admin`;
 
-
-/* table structure for table `t_role` */
-drop table if exists `t_role`;
-
-create table `t_role` (
-    `id` char(32) comment '角色id',
-    `name` varchar(255) not null comment '角色名',
-    `summary` varchar(255) comment '角色介绍',
-    `category_menu_ids` text comment '角色管辖的菜单的id',
-    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
-    `create_time` datetime default now() comment '创建时间',
-    `update_time` datetime default now() comment '更新时间',
-    primary key (`id`)
-) engine = InnoDB default charset = utf8 comment = '角色表';
+CREATE TABLE `t_admin` (
+  `uid` char(32) NOT NULL COMMENT '唯一uid',
+  `user_name` varchar(255) NOT NULL COMMENT '用户名',
+  `pass_word` varchar(255) NOT NULL COMMENT '密码',
+  `gender` varchar(1) DEFAULT NULL COMMENT '性别(1:男2:女)',
+  `avatar` varchar(100) DEFAULT NULL COMMENT '个人头像',
+  `email` varchar(60) DEFAULT NULL COMMENT '邮箱',
+  `birthday` date DEFAULT NULL COMMENT '出生年月日',
+  `mobile` char(11) DEFAULT NULL COMMENT '手机',
+  `summary` varchar(200) DEFAULT NULL COMMENT '自我简介最多150字',
+  `login_count` int unsigned DEFAULT '0' COMMENT '登录次数',
+  `last_login_time` datetime DEFAULT NULL COMMENT '最后登录时间',
+  `last_login_ip` varchar(50) DEFAULT '127.0.0.1' COMMENT '最后登录IP',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
+  `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
+  `nick_name` varchar(255) DEFAULT NULL COMMENT '昵称',
+  `qq_number` varchar(255) DEFAULT NULL COMMENT 'QQ号',
+  `we_chat` varchar(255) DEFAULT NULL COMMENT '微信号',
+  `occupation` varchar(255) DEFAULT NULL COMMENT '职业',
+  `github` varchar(255) DEFAULT NULL COMMENT 'github地址',
+  `gitee` varchar(255) DEFAULT NULL COMMENT 'gitee地址',
+  `role_uid` varchar(32) DEFAULT NULL COMMENT '拥有的角色uid',
+  `person_resume` text COMMENT '履历',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='管理员表';
 
 
-/* table structure for table `t_category_menu` */
-drop table if exists `t_category_menu`;
+/*Table structure for table `t_blog` */
 
-create table `t_category_menu` (
-    `id` char(32) comment '菜单id',
-    `name` varchar(255) not null comment '菜单名称',
-    `level` tinyint comment '菜单级别',
-    `summary` varchar(255) comment '菜单简介',
-    `parent_id` char(32) comment '菜单父id',
-    `url` varchar(255) comment 'url地址',
-    `icon` varchar(255) comment '图标',
-    `order` int default 0 comment '排序字段，越大越靠前',
-    `is_show` bool default 0 comment '是否显示，0:否，1:是',
-    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
-    `create_time` datetime default now() comment '创建时间',
-    `update_time` datetime default now() comment '更新时间',
-    primary key (`id`)
-) engine = InnoDB default charset = utf8 comment = '菜单类别表';
+DROP TABLE IF EXISTS `t_blog`;
 
-
-/* table structure for table `t_blog` */
-drop table if exists `t_blog`;
-
-create table `t_blog` (
-    `id` char(32) comment '博客id',
-    `title` varchar(255) comment '博客标题',
-    `content` longtext not null comment '博客内容',
-    `author` varchar(255) comment '博客作者',
-    `summary` varchar(255) comment '博客简介',
-    `click_count` int default 0 comment '博客点击数',
-    `collect_count` int default 0 comment '博客收藏数',
-    `level` tinyint default 0 comment '推荐等级，0:正常',
-    `order` int default 0 comment '排序字段，越大越靠前',
-    `tag_id` char(32) comment '博客标签id',
-    `picture_id` char(32) comment '标题图片id',
-    `admin_id` char(32) comment '管理员id',
-    `blog_sort_id` char(32) comment '博客分类id',
-    `is_publish` bool default 1 comment '是否发布，0:否，1:是',
-    `is_original` bool default 1 comment '是否原创，0:否，1:是',
-    `is_comment` bool default 1 comment '是否开启评论，0:否，1:是',
-    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
-    `create_time` datetime default now() comment '创建时间',
-    `update_time` datetime default now() comment '更新时间',
-    primary key (`id`)
-) engine = InnoDB default charset = utf8 comment = '博客表';
+CREATE TABLE `t_blog` (
+  `uid` char(32) NOT NULL COMMENT '唯一uid',
+  `title` varchar(200) DEFAULT NULL COMMENT '博客标题',
+  `summary` varchar(200) DEFAULT NULL COMMENT '博客简介',
+  `content` longtext COMMENT '博客内容',
+  `tag_uid` varchar(255) DEFAULT NULL COMMENT '标签uid',
+  `click_count` int DEFAULT '0' COMMENT '博客点击数',
+  `collect_count` int DEFAULT '0' COMMENT '博客收藏数',
+  `file_uid` varchar(255) DEFAULT NULL COMMENT '标题图片uid',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
+  `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
+  `admin_uid` char(32) DEFAULT NULL COMMENT '管理员uid',
+  `is_original` varchar(1) DEFAULT '1' COMMENT '是否原创（0:不是 1：是）',
+  `author` varchar(255) DEFAULT NULL COMMENT '作者',
+  `articles_part` varchar(255) DEFAULT NULL COMMENT '文章出处',
+  `blog_sort_uid` char(32) DEFAULT NULL COMMENT '博客分类UID',
+  `level` tinyint(1) DEFAULT '0' COMMENT '推荐等级(0:正常)',
+  `is_publish` varchar(1) DEFAULT '1' COMMENT '是否发布：0：否，1：是',
+  `sort` int NOT NULL DEFAULT '0' COMMENT '排序字段',
+  `start_comment` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否开启评论(0:否 1:是)',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='博客表';
 
 
-/* table structure for table `t_blog_sort` */
-drop table if exists `t_blog_sort`;
+/*Table structure for table `t_blog_sort` */
 
-create table `t_blog_sort` (
-    `id` char(32) comment '博客分类id',
-    `name` varchar(255) comment '博客分类名',
-    `content` varchar(255) comment '分类简介',
-    `click_count` int default 0 comment '分类点击数',
-    `order` int default 0 comment '排序字段，越大越靠前',
-    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
-    `create_time` datetime default now() comment '创建时间',
-    `update_time` datetime default now() comment '更新时间',
-    primary key (`id`)
-) engine = InnoDB default charset = utf8 comment = '博客分类表';
+DROP TABLE IF EXISTS `t_blog_sort`;
 
-
-/* table structure for table `t_tag` */
-drop table if exists `t_tag`;
-
-create table `t_tag` (
-    `id` char(32) comment '博客标签id',
-    `name` varchar(255) comment '标签名',
-    `click_count` int default 0 comment '标签点击数',
-    `order` int default 0 comment '排序字段，越大越靠前',
-    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
-    `create_time` datetime default now() comment '创建时间',
-    `update_time` datetime default now() comment '更新时间',
-    primary key (`id`)
-) engine = InnoDB default charset = utf8 comment = '博客标签表';
+CREATE TABLE `t_blog_sort` (
+  `uid` char(32) NOT NULL COMMENT '唯一uid',
+  `sort_name` varchar(255) DEFAULT NULL COMMENT '分类内容',
+  `content` varchar(255) DEFAULT NULL COMMENT '分类简介',
+  `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
+  `sort` int DEFAULT '0' COMMENT '排序字段，越大越靠前',
+  `click_count` int DEFAULT '0' COMMENT '点击数',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='博客分类表';
 
 
-/* table structure for table `t_picture` */
-drop table if exists `t_picture`;
+/*Table structure for table `t_category_menu` */
 
-create table `t_picture` (
-    `id` char(32) comment '图片id',
-    `name` varchar(255) comment '图片名',
-    `picture_sort_id` char(32) comment '图片分类id',
-    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
-    `create_time` datetime default now() comment '创建时间',
-    `update_time` datetime default now() comment '更新时间',
-    primary key (`id`)
-) engine = InnoDB default charset = utf8 comment = '图片表';
+DROP TABLE IF EXISTS `t_category_menu`;
 
-
-/* table structure for table `t_picture_sort` */
-drop table if exists `t_picture_sort`;
-
-create table `t_picture_sort` (
-    `id` char(32) comment '图片分类id',
-    `name` varchar(255) comment '图片分类名',
-    `order` int default 0 comment '排序字段，越大越靠前',
-    `is_show` bool default 0 comment '是否显示，0:否，1:是',
-    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
-    `create_time` datetime default now() comment '创建时间',
-    `update_time` datetime default now() comment '更新时间',
-    primary key (`id`)
-) engine = InnoDB default charset = utf8 comment = '图片分类表';
+CREATE TABLE `t_category_menu` (
+  `uid` char(32) NOT NULL COMMENT '唯一uid',
+  `name` varchar(255) NOT NULL COMMENT '菜单名称',
+  `menu_level` tinyint(1) DEFAULT NULL COMMENT '菜单级别',
+  `summary` varchar(200) DEFAULT NULL COMMENT '简介',
+  `parent_uid` char(32) DEFAULT NULL COMMENT '父uid',
+  `url` varchar(255) DEFAULT NULL COMMENT 'url地址',
+  `icon` varchar(50) DEFAULT NULL COMMENT '图标',
+  `sort` int DEFAULT '0' COMMENT '排序字段，越大越靠前',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
+  `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
+  `is_show` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否显示 1:是 0:否',
+  `menu_type` tinyint(1) NOT NULL DEFAULT '0' COMMENT '菜单类型 0: 菜单   1: 按钮',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='菜单表';
 
 
-/* table structure for table `t_collect` */
-drop table if exists `t_collect`;
+/*Table structure for table `t_collect` */
 
-create table `t_collect` (
-    `id` char(32) comment '收藏id',
-    `user_id` char(32) not null comment '用户id',
-    `blog_id` char(32) not null comment '博客id',
-    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
-    `create_time` datetime default now() comment '创建时间',
-    `update_time` datetime default now() comment '更新时间',
-    primary key (`id`)
-) engine = InnoDB default charset = utf8 comment = '收藏表';
+DROP TABLE IF EXISTS `t_collect`;
 
-
-/* table structure for table `t_user` */
-drop table if exists `t_user`;
-
-create table `t_user` (
-    `id` char(32) comment '用户id',
-    `name` varchar(255) not null comment '用户名',
-    `password` char(60) not null comment '密码',
-    `nickname` varchar(255) comment '昵称',
-    `gender` tinyint(1) comment '性别，0:女，1:男',
-    `birthday` date comment '出生日期',
-    `avatar` varchar(255) comment '头像',
-    `phone_number` char(11) comment '手机号',
-    `qq` varchar(255) comment 'QQ',
-    `wechat` varchar(255) comment '微信',
-    `email` varchar(255) comment '邮箱',
-    `valid_code` varchar(255) comment '验证码',
-    `occupation` varchar(255) comment '职业',
-    `summary` varchar(255) comment '自我介绍',
-    `login_count` int unsigned default 0 comment '登录次数',
-    `last_login_time` datetime comment '最后登录时间',
-    `last_login_ip` varchar(255) comment '最后登录ip',
-    `ip_source` varchar(255) comment 'ip来源',
-    `browser` varchar(255) comment '浏览器',
-    `os` varchar(255) comment '操作系统',
-    `source` varchar(255) comment '账号来源',
-    `platform_id` varchar(255) comment '平台id',
-    `is_comment` bool default 1 comment '是否开启评论，0:否，1:是',
-    `is_email_notify` bool default 0 comment '是否开启邮件通知，0:否，1:是',
-    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
-    `create_time` datetime default now() comment '创建时间',
-    `update_time` datetime default now() comment '更新时间',
-    primary key (`id`)
-) engine = InnoDB default charset = utf8 comment = '用户表';
+CREATE TABLE `t_collect` (
+  `uid` char(32) NOT NULL COMMENT '唯一uid',
+  `user_uid` char(32) NOT NULL COMMENT '用户的uid',
+  `blog_uid` char(32) NOT NULL COMMENT '博客的uid',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
+  `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='收藏表';
 
 
-/* table structure for table `t_comment` */
-drop table if exists `t_comment`;
+/*Table structure for table `t_comment` */
 
-create table `t_comment` (
-    `id` char(32) comment '评论id',
-    `user_id` char(32) comment '用户id',
-    `first_comment_id` char(32) comment '一级评论id',
-    `to_comment_id` char(32) comment '回复某条评论的id',
-    `to_user_id` char(32) comment '回复某个人的id',
-    `blog_id` char(32) comment '博客id',
-    `content` varchar(1024) comment '评论内容',
-    `source` varchar(255) comment '评论来源',
-    `type` tinyint default 0 comment '评论类型，0:评论，1:点赞',
-    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
-    `create_time` datetime default now() comment '创建时间',
-    `update_time` datetime default now() comment '更新时间',
-    primary key (`id`)
-) engine = InnoDB default charset = utf8 comment = '评论表';
+DROP TABLE IF EXISTS `t_comment`;
 
-
-/* table structure for table `t_system_log` */
-drop table if exists `t_system_log`;
-
-create table `t_system_log` (
-    `id` char(32) comment '系统日志id',
-    `username` varchar(255) not null comment '用户名',
-    `ip` varchar(255) comment '请求ip',
-    `url` varchar(255) comment '请求url',
-    `type` varchar(255) comment '请求方式',
-    `path` varchar(255) comment '请求类路径',
-    `method` varchar(255) comment '请求方法',
-    `params` varchar(255) comment '请求参数',
-    `description` varchar(255) comment '请求描述',
-    `ip_source` varchar(255) comment 'ip来源',
-    `duration` int unsigned default 0 comment '请求花费的时间',
-    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
-    `create_time` datetime default now() comment '创建时间',
-    `update_time` datetime default now() comment '更新时间',
-    primary key (`id`)
-) engine = InnoDB default charset = utf8 comment = '系统日志表';
+CREATE TABLE `t_comment` (
+  `uid` char(32) NOT NULL COMMENT '唯一uid',
+  `user_uid` char(32) DEFAULT NULL COMMENT '用户uid',
+  `to_uid` char(32) DEFAULT NULL COMMENT '回复某条评论的uid',
+  `to_user_uid` char(32) DEFAULT NULL COMMENT '回复某个人的uid',
+  `content` varchar(2048) DEFAULT NULL COMMENT '评论内容',
+  `blog_uid` char(32) DEFAULT NULL COMMENT '博客uid',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
+  `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
+  `source` varchar(255) NOT NULL COMMENT '评论来源： MESSAGE_BOARD，ABOUT，BLOG_INFO 等',
+  `TYPE` tinyint(1) NOT NULL DEFAULT '0' COMMENT '评论类型 1:点赞 0:评论',
+  `first_comment_uid` char(32) DEFAULT NULL COMMENT '一级评论UID',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='评论表';
 
 
-/* table structure for table `t_exception_log` */
-drop table if exists `t_exception_log`;
+/*Table structure for table `t_comment_report` */
 
-create table `t_exception_log` (
-    `id` char(32) comment '异常日志id',
-    `json` text comment '异常对象json格式',
-    `message` text comment '异常信息',
-    `ip` varchar(255) comment '请求ip',
-    `method` varchar(255) comment '请求方法',
-    `params` varchar(255) comment '请求参数',
-    `description` varchar(255) comment '请求描述',
-    `ip_source` varchar(255) comment 'ip来源',
-    `is_delete` bool default 0 comment '是否删除，0:否，1:是',
-    `create_time` datetime default now() comment '创建时间',
-    `update_time` datetime default now() comment '更新时间',
-    primary key (`id`)
-) engine = InnoDB default charset = utf8 comment = '异常日志表';
+DROP TABLE IF EXISTS `t_comment_report`;
+
+CREATE TABLE `t_comment_report` (
+  `uid` char(32) NOT NULL COMMENT '唯一uid',
+  `user_uid` char(32) DEFAULT NULL COMMENT '举报人uid',
+  `report_comment_uid` char(32) DEFAULT NULL COMMENT '被举报的评论Uid',
+  `report_user_uid` char(32) DEFAULT NULL COMMENT '被举报的用户uid',
+  `content` varchar(1000) DEFAULT NULL COMMENT '举报的原因',
+  `progress` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '进展状态: 0 未查看   1: 已查看  2：已处理',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
+  `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='评论举报表';
+
+
+/*Table structure for table `t_exception_log` */
+
+DROP TABLE IF EXISTS `t_exception_log`;
+
+CREATE TABLE `t_exception_log` (
+  `uid` char(32) NOT NULL COMMENT '唯一uid',
+  `exception_json` mediumtext COMMENT '异常对象json格式',
+  `exception_message` mediumtext COMMENT '异常信息',
+  `status` tinyint(1) DEFAULT '1' COMMENT '状态',
+  `create_time` datetime NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NULL DEFAULT now() COMMENT '更新时间',
+  `ip` varchar(20) DEFAULT NULL COMMENT 'ip地址',
+  `ip_source` varchar(100) DEFAULT NULL COMMENT 'ip来源',
+  `method` varchar(255) DEFAULT NULL COMMENT '请求方法',
+  `operation` varchar(100) DEFAULT NULL COMMENT '方法描述',
+  `params` longtext COMMENT '请求参数',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='异常日志表';
+
+
+/*Table structure for table `t_feedback` */
+
+DROP TABLE IF EXISTS `t_feedback`;
+
+CREATE TABLE `t_feedback` (
+  `uid` char(32) NOT NULL COMMENT '唯一uid',
+  `user_uid` char(32) NOT NULL COMMENT '用户uid',
+  `content` varchar(1000) DEFAULT NULL COMMENT '反馈的内容',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
+  `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
+  `title` varchar(255) DEFAULT NULL COMMENT '标题',
+  `feedback_status` tinyint(1) NOT NULL DEFAULT '0' COMMENT '反馈状态： 0：已开启  1：进行中  2：已完成  3：已拒绝',
+  `reply` varchar(255) DEFAULT NULL COMMENT '回复',
+  `admin_uid` char(32) DEFAULT NULL COMMENT '管理员uid',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='反馈表';
+
+
+/*Table structure for table `t_link` */
+
+DROP TABLE IF EXISTS `t_link`;
+
+CREATE TABLE `t_link` (
+  `uid` char(32) NOT NULL COMMENT '唯一uid',
+  `title` varchar(255) DEFAULT NULL COMMENT '友情链接标题',
+  `summary` varchar(255) DEFAULT NULL COMMENT '友情链接介绍',
+  `url` varchar(255) DEFAULT NULL COMMENT '友情链接URL',
+  `click_count` int DEFAULT '0' COMMENT '点击数',
+  `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
+  `sort` int DEFAULT '0' COMMENT '排序字段，越大越靠前',
+  `link_status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '友链状态： 0 申请中， 1：已上线，  2：已下架',
+  `user_uid` char(32) DEFAULT NULL COMMENT '申请用户UID',
+  `admin_uid` char(32) DEFAULT NULL COMMENT '操作管理员UID',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='友情链接表';
+
+
+/*Table structure for table `t_picture` */
+
+DROP TABLE IF EXISTS `t_picture`;
+
+CREATE TABLE `t_picture` (
+  `uid` char(32) NOT NULL COMMENT '唯一uid',
+  `file_uid` char(32) DEFAULT NULL COMMENT '图片uid',
+  `pic_name` varchar(255) DEFAULT NULL COMMENT '图片名',
+  `picture_sort_uid` char(32) DEFAULT NULL COMMENT '分类uid',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
+  `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='图片表';
+
+
+/*Table structure for table `t_picture_sort` */
+
+DROP TABLE IF EXISTS `t_picture_sort`;
+
+CREATE TABLE `t_picture_sort` (
+  `uid` char(32) NOT NULL COMMENT '唯一uid',
+  `file_uid` char(32) DEFAULT NULL COMMENT '分类图片uid',
+  `name` varchar(255) DEFAULT NULL COMMENT '分类名',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
+  `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
+  `parent_uid` char(32) DEFAULT NULL,
+  `sort` int DEFAULT '0' COMMENT '排序字段，越大越靠前',
+  `is_show` tinyint(1) NOT NULL DEFAULT '1' COMMENT '是否显示，1：是，0，否',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='图片分类表';
+
+
+/*Table structure for table `t_role` */
+
+DROP TABLE IF EXISTS `t_role`;
+
+CREATE TABLE `t_role` (
+  `uid` char(32) NOT NULL COMMENT '角色id',
+  `role_name` varchar(255) NOT NULL COMMENT '角色名',
+  `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
+  `summary` varchar(255) DEFAULT NULL COMMENT '角色介绍',
+  `category_menu_uids` text COMMENT '角色管辖的菜单的UID',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+/*Table structure for table `t_sys_log` */
+
+DROP TABLE IF EXISTS `t_sys_log`;
+
+CREATE TABLE `t_sys_log` (
+  `uid` char(32) NOT NULL COMMENT '唯一uid',
+  `user_name` varchar(255) NOT NULL COMMENT '用户名',
+  `admin_uid` char(32) DEFAULT NULL COMMENT '管理员uid',
+  `ip` varchar(50) DEFAULT NULL COMMENT '请求ip地址',
+  `url` varchar(255) DEFAULT NULL COMMENT '请求url',
+  `type` varchar(32) DEFAULT NULL COMMENT '请求方式',
+  `class_path` varchar(255) DEFAULT NULL COMMENT '请求类路径',
+  `method` varchar(32) DEFAULT NULL COMMENT '请求方法名',
+  `params` longtext COMMENT '请求参数',
+  `operation` varchar(32) DEFAULT NULL COMMENT '描述',
+  `status` tinyint(1) DEFAULT '1' COMMENT '状态',
+  `create_time` datetime NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NULL DEFAULT now() COMMENT '更新时间',
+  `ip_source` varchar(255) DEFAULT NULL COMMENT 'ip来源',
+  `spend_time` int DEFAULT '0' COMMENT '方法请求花费的时间',
+  PRIMARY KEY (`uid`) USING BTREE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统日志表';
+
+
+/*Table structure for table `t_tag` */
+
+DROP TABLE IF EXISTS `t_tag`;
+
+CREATE TABLE `t_tag` (
+  `uid` char(32) NOT NULL COMMENT '唯一uid',
+  `content` varchar(1000) DEFAULT NULL COMMENT '标签内容',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
+  `click_count` int DEFAULT '0' COMMENT '标签简介',
+  `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
+  `sort` int DEFAULT '0' COMMENT '排序字段，越大越靠前',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='标签表';
+
+
+/*Table structure for table `t_user` */
+
+DROP TABLE IF EXISTS `t_user`;
+
+CREATE TABLE `t_user` (
+  `uid` char(32) NOT NULL COMMENT '唯一uid',
+  `user_name` varchar(255) NOT NULL COMMENT '用户名',
+  `pass_word` varchar(255) NOT NULL COMMENT '密码',
+  `gender` tinyint(1) unsigned DEFAULT NULL COMMENT '性别(1:男2:女)',
+  `avatar` varchar(100) DEFAULT NULL COMMENT '个人头像',
+  `email` varchar(60) DEFAULT NULL COMMENT '邮箱',
+  `birthday` date DEFAULT NULL COMMENT '出生年月日',
+  `mobile` char(11) DEFAULT NULL COMMENT '手机',
+  `summary` varchar(200) DEFAULT NULL COMMENT '自我简介最多150字',
+  `login_count` int unsigned DEFAULT '0' COMMENT '登录次数',
+  `last_login_time` datetime DEFAULT NULL COMMENT '最后登录时间',
+  `last_login_ip` varchar(50) DEFAULT '127.0.0.1' COMMENT '最后登录IP',
+  `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
+  `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
+  `nick_name` varchar(255) DEFAULT NULL COMMENT '昵称',
+  `source` varchar(255) DEFAULT NULL COMMENT '资料来源',
+  `uuid` varchar(255) DEFAULT NULL COMMENT '平台uuid',
+  `qq_number` varchar(20) DEFAULT NULL COMMENT 'QQ号',
+  `we_chat` varchar(255) DEFAULT NULL COMMENT '微信号',
+  `occupation` varchar(255) DEFAULT NULL COMMENT '职业',
+  `comment_status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '评论状态 1:正常 0:禁言',
+  `ip_source` varchar(255) DEFAULT NULL COMMENT 'ip来源',
+  `browser` varchar(255) DEFAULT NULL COMMENT '浏览器',
+  `os` varchar(255) DEFAULT NULL COMMENT '操作系统',
+  `start_email_notification` tinyint(1) NOT NULL DEFAULT '0' COMMENT '是否开启邮件通知 1:开启 0:关闭',
+  `user_tag` tinyint(1) NOT NULL DEFAULT '0' COMMENT '用户标签：0：普通用户，1：管理员，2：博主 等',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
 

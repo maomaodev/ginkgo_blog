@@ -1,4 +1,4 @@
-package com.ginkgoblog.commons.vo;
+package com.ginkgoblog.base.vo;
 
 import lombok.Data;
 
@@ -11,12 +11,12 @@ import lombok.Data;
 @Data
 public class SuperVO {
     /**
-     * 唯一id
+     * 唯一uid
      */
-    private String id;
+    private String uid;
 
     /**
-     * 是否删除，0:删除，1:删除
+     * 状态（0：失效、1：生效）
      */
-    private Boolean isDelete;
+    private Integer status;
 }

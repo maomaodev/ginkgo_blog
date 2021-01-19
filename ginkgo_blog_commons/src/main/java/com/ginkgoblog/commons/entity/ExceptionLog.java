@@ -1,6 +1,7 @@
 package com.ginkgoblog.commons.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ginkgoblog.base.entity.SuperEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -15,19 +16,14 @@ import lombok.EqualsAndHashCode;
 @TableName("t_exception_log")
 public class ExceptionLog extends SuperEntity {
     /**
-     * 异常对象json格式
-     */
-    private String json;
-
-    /**
-     * 异常信息
-     */
-    private String message;
-
-    /**
-     * 请求ip
+     * 操作IP
      */
     private String ip;
+
+    /**
+     * ip来源
+     */
+    private String ipSource;
 
     /**
      * 请求方法
@@ -35,17 +31,22 @@ public class ExceptionLog extends SuperEntity {
     private String method;
 
     /**
-     * 请求参数
+     * 描述
+     */
+    private String operation;
+
+    /**
+     * 参数
      */
     private String params;
 
     /**
-     * 请求描述
+     * 异常对象json格式
      */
-    private String description;
+    private String exceptionJson;
 
     /**
-     * ip来源
+     * 异常简单信息,等同于e.getMessage
      */
-    private String ipSource;
+    private String exceptionMessage;
 }

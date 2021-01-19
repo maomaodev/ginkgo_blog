@@ -1,6 +1,9 @@
 package com.ginkgoblog.commons.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ginkgoblog.base.entity.SuperEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -15,17 +18,23 @@ import lombok.EqualsAndHashCode;
 @TableName("t_blog_sort")
 public class BlogSort extends SuperEntity {
     /**
-     * 标签名
+     * 分类名
      */
-    private String name;
+    private String sortName;
 
     /**
-     * 标签点击数
+     * 分类介绍
+     */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
+    private String content;
+
+    /**
+     * 点击数
      */
     private Integer clickCount;
 
     /**
-     * 排序字段，越大越靠前
+     * 排序字段，数值越大，越靠前
      */
-    private Integer order;
+    private Integer sort;
 }

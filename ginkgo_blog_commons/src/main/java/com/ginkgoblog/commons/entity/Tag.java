@@ -1,6 +1,7 @@
 package com.ginkgoblog.commons.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ginkgoblog.base.entity.SuperEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 
@@ -15,17 +16,17 @@ import lombok.EqualsAndHashCode;
 @TableName("t_tag")
 public class Tag extends SuperEntity {
     /**
-     * 标签名
+     * 标签内容
      */
-    private String name;
+    private String content;
 
     /**
-     * 标签点击数
+     * 标签简介
      */
     private Integer clickCount;
 
     /**
-     * 排序字段，越大越靠前
+     * 排序字段，数值越大，越靠前
      */
-    private Integer order;
+    private Integer sort;
 }

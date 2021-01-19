@@ -18,26 +18,18 @@ public interface UserService extends IService<User> {
      * 通过用户来源和id获取用户
      *
      * @param source 用户来源
-     * @param id     用户id
+     * @param uuid   平台uuid
      * @return 用户
      */
-    User getUserBySourceAndId(String source, String id);
-
-    /**
-     * 根据id列表获取用户列表
-     *
-     * @param ids id列表
-     * @return 用户列表
-     */
-    List<User> getUserListByIds(List<String> ids);
+    User getUserBySourceAndUuid(String source, String uuid);
 
     /**
      * 获取用户数
      *
-     * @param isDelete 是否删除
+     * @param status 状态
      * @return 用户数
      */
-    Integer getUserCount(Boolean isDelete);
+    Integer getUserCount(int status);
 
     /**
      * 设置请求相关，如浏览器，IP，IP来源等
@@ -61,7 +53,7 @@ public interface UserService extends IService<User> {
      * @param userVO 用户表现层对象
      * @return 处理信息
      */
-    String register(UserVO userVO);
+    String registerUser(UserVO userVO);
 
     /**
      * 用户登录
@@ -69,7 +61,7 @@ public interface UserService extends IService<User> {
      * @param userVO 用户表现层对象
      * @return 处理信息
      */
-    String login(UserVO userVO);
+    String loginUser(UserVO userVO);
 
     /**
      * 用户激活
@@ -77,7 +69,7 @@ public interface UserService extends IService<User> {
      * @param userVO 用户表现层对象
      * @return 处理信息
      */
-    String active(UserVO userVO);
+    String activeUser(UserVO userVO);
 
     /**
      * 编辑用户

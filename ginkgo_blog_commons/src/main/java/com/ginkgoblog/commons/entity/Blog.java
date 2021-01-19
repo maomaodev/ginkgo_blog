@@ -1,8 +1,13 @@
 package com.ginkgoblog.commons.entity;
 
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
+import com.ginkgoblog.base.entity.SuperEntity;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+
+import java.util.List;
 
 /**
  * 博客表
@@ -20,19 +25,26 @@ public class Blog extends SuperEntity {
     private String title;
 
     /**
+     * 博客简介
+     * updateStrategy = FieldStrategy.IGNORED ：表示更新时候忽略非空判断
+     */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
+    private String summary;
+
+    /**
      * 博客内容
      */
     private String content;
 
     /**
-     * 博客作者
+     * 标签uid
      */
-    private String author;
+    private String tagUid;
 
     /**
-     * 博客简介
+     * 博客分类UID
      */
-    private String summary;
+    private String blogSortUid;
 
     /**
      * 博客点击数
@@ -45,47 +57,98 @@ public class Blog extends SuperEntity {
     private Integer collectCount;
 
     /**
-     * 推荐等级，0:正常
+     * 标题图片UID
+     */
+    @TableField(updateStrategy = FieldStrategy.IGNORED)
+    private String fileUid;
+
+    /**
+     * 管理员UID
+     */
+    private String adminUid;
+
+    /**
+     * 是否发布
+     */
+    private String isPublish;
+
+    /**
+     * 是否原创
+     */
+    private String isOriginal;
+
+    /**
+     * 如果原创，作者为管理员名
+     */
+    private String author;
+
+    /**
+     * 文章出处
+     */
+    private String articlesPart;
+
+    /**
+     * 推荐级别，用于首页推荐
+     * 0：正常
+     * 1：一级推荐(轮播图)
+     * 2：二级推荐(top)
+     * 3：三级推荐 ()
+     * 4：四级 推荐 (特别推荐)
      */
     private Integer level;
 
     /**
-     * 排序字段，越大越靠前
+     * 排序字段，数值越大，越靠前
      */
-    private Integer order;
+    private Integer sort;
 
     /**
-     * 博客标签id
+     * 是否开启评论(0:否， 1:是)
      */
-    private String tagId;
+    private String startComment;
+
+
+    // 以下字段不存入数据库，封装为了方便使用
 
     /**
-     * 标题图片id
+     * 标签,一篇博客对应多个标签
      */
-    private String pictureId;
+    @TableField(exist = false)
+    private List<Tag> tagList;
 
     /**
-     * 管理员id
+     * 标题图
      */
-    private String adminId;
+    @TableField(exist = false)
+    private List<String> photoList;
 
     /**
-     * 博客分类id
+     * 博客分类
      */
-    private String blogSortId;
+    @TableField(exist = false)
+    private BlogSort blogSort;
 
     /**
-     * 是否发布，0:否，1:是
+     * 博客分类名
      */
-    private Boolean isPublish;
+    @TableField(exist = false)
+    private String blogSortName;
 
     /**
-     * 是否原创，0:否，1:是
+     * 博客标题图
      */
-    private Boolean isOriginal;
+    @TableField(exist = false)
+    private String photoUrl;
 
     /**
-     * 是否开启评论，0:否，1:是
+     * 点赞数
      */
-    private Boolean isComment;
+    @TableField(exist = false)
+    private Integer praiseCount;
+
+    /**
+     * 版权申明
+     */
+    @TableField(exist = false)
+    private String copyright;
 }

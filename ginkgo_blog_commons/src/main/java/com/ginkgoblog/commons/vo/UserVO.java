@@ -1,7 +1,11 @@
 package com.ginkgoblog.commons.vo;
 
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.ginkgoblog.base.vo.SuperVO;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
 
@@ -15,47 +19,27 @@ public class UserVO extends SuperVO {
     /**
      * 用户名
      */
-    private String name;
+    private String userName;
 
     /**
      * 密码
      */
-    private String password;
+    private String passWord;
 
     /**
      * 昵称
      */
-    private String nickname;
+    private String nickName;
 
     /**
-     * 性别，0:女，1:男
+     * 性别(1:男2:女)
      */
-    private Integer gender;
+    private String gender;
 
     /**
-     * 出生日期
-     */
-    private Date birthday;
-
-    /**
-     * 头像
+     * 个人头像
      */
     private String avatar;
-
-    /**
-     * 手机号
-     */
-    private String phoneNumber;
-
-    /**
-     * QQ
-     */
-    private String qq;
-
-    /**
-     * 微信
-     */
-    private String wechat;
 
     /**
      * 邮箱
@@ -63,32 +47,64 @@ public class UserVO extends SuperVO {
     private String email;
 
     /**
+     * 出生年月日
+     */
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    private Date birthday;
+
+    /**
+     * 手机
+     */
+    private String mobile;
+
+    /**
+     * QQ号
+     */
+    private String qqNumber;
+
+    /**
+     * 微信号
+     */
+    private String weChat;
+
+    /**
      * 职业
      */
     private String occupation;
 
     /**
-     * 自我介绍
+     * 自我简介最多150字
      */
     private String summary;
 
     /**
-     * 账号来源
+     * 资料来源
      */
     private String source;
 
     /**
-     * 平台id
+     * 平台uuid
      */
-    private String platformId;
+    private String uuid;
 
     /**
-     * 是否开启评论，0:否，1:是
+     * 评论状态，0 禁言， 1 正常
      */
-    private Boolean isComment;
+    private Integer commentStatus;
 
     /**
-     * 是否开启邮件通知，0:否，1:是
+     * 开启邮件通知：  0：关闭， 1：开启
      */
-    private Boolean isEmailNotify;
+    private Integer startEmailNotification;
+
+    /**
+     * 用户标签  0：普通，1：管理员，2：博主
+     */
+    private Integer userTag;
+
+    /**
+     * 用户头像
+     */
+    private String photoUrl;
 }
