@@ -48,30 +48,6 @@ public interface UserService extends IService<User> {
     IPage<User> getPageList(UserVO userVO);
 
     /**
-     * 用户注册
-     *
-     * @param userVO 用户表现层对象
-     * @return 处理信息
-     */
-    String registerUser(UserVO userVO);
-
-    /**
-     * 用户登录
-     *
-     * @param userVO 用户表现层对象
-     * @return 处理信息
-     */
-    String loginUser(UserVO userVO);
-
-    /**
-     * 用户激活
-     *
-     * @param userVO 用户表现层对象
-     * @return 处理信息
-     */
-    String activeUser(UserVO userVO);
-
-    /**
      * 编辑用户
      *
      * @param userVO 用户表现层对象
