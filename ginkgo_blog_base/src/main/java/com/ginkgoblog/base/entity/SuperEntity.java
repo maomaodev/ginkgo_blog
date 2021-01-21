@@ -1,8 +1,10 @@
 package com.ginkgoblog.base.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.extension.activerecord.Model;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import java.util.Date;
@@ -14,7 +16,8 @@ import java.util.Date;
  * @date 2021-01-12
  */
 @Data
-public class SuperEntity {
+@EqualsAndHashCode(callSuper = false)
+public class SuperEntity extends Model {
     /**
      * 唯一ID
      */

@@ -17,6 +17,6 @@ public class AdminServiceImpl extends ServiceImpl<AdminMapper, Admin> implements
 
     @Override
     public void register(Admin admin) {
-        this.save(admin);
+        admin.insert();
     }
 }

@@ -1,4 +1,4 @@
-package com.ginkgoblog.admin.config;
+package com.ginkgoblog.commons.config;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import lombok.extern.slf4j.Slf4j;

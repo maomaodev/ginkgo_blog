@@ -107,7 +107,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setNickName(userVO.getNickName());
         user.setUserTag(userVO.getUserTag());
         user.setCommentStatus(userVO.getCommentStatus());
-        this.updateById(user);
+        user.updateById();
         return ResultUtils.result(SystemConstants.SUCCESS,MessageConstants.UPDATE_SUCCESS);
     }
 
@@ -116,7 +116,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         User user = this.getById(userVO.getUid());
         PasswordEncoder encoder = new BCryptPasswordEncoder();
         user.setPassWord(encoder.encode(defaultPassword));
-        this.updateById(user);
+        user.updateById();
         return ResultUtils.result(SystemConstants.SUCCESS, MessageConstants.OPERATION_SUCCESS);
     }
 
@@ -124,7 +124,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     public String deleteUser(UserVO userVO) {
         User user = this.getById(userVO.getUid());
         user.setStatus(StatusEnum.DISABLED);
-        this.updateById(user);
+        user.updateById();
         return ResultUtils.result(SystemConstants.SUCCESS, MessageConstants.DELETE_SUCCESS);
     }
 }

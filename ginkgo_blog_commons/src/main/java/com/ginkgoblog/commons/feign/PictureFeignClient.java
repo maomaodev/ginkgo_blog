@@ -7,4 +7,5 @@ package com.ginkgoblog.commons.feign;
  * @date 2021-01-20
  */
 public interface PictureFeignClient {
+
 }

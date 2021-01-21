@@ -16,6 +16,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
 @ComponentScan(basePackages = {
         "com.ginkgoblog.web.config",
         "com.ginkgoblog.web.controller",
+        "com.ginkgoblog.commons.config",
         "com.ginkgoblog.commons.service"
 })
 public class WebApplication {
