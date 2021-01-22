@@ -9,7 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ginkgo_blog_utils</artifactId>
+    <artifactId>ginkgo_utils</artifactId>
 
     <dependencies>
         <dependency>

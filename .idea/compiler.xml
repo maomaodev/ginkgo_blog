@@ -6,24 +6,26 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
-        <module name="ginkgo_blog_utils" />
-        <module name="ginkgo_blog_commons" />
-        <module name="ginkgo_blog_admin" />
-        <module name="ginkgo_blog_picture" />
-        <module name="ginkgo_blog_web" />
-        <module name="ginkgo_blog_base" />
+        <module name="ginkgo_admin" />
+        <module name="ginkgo_picture" />
+        <module name="ginkgo_eureka" />
+        <module name="ginkgo_utils" />
+        <module name="ginkgo_base" />
+        <module name="ginkgo_commons" />
+        <module name="ginkgo_web" />
       </profile>
     </annotationProcessing>
   </component>
   <component name="JavacSettings">
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
-      <module name="ginkgo_blog_admin" options="-parameters" />
-      <module name="ginkgo_blog_base" options="-parameters" />
-      <module name="ginkgo_blog_commons" options="-parameters" />
+      <module name="ginkgo_admin" options="-parameters" />
+      <module name="ginkgo_base" options="-parameters" />
       <module name="ginkgo_blog_eureka" options="-parameters" />
-      <module name="ginkgo_blog_picture" options="-parameters" />
-      <module name="ginkgo_blog_utils" options="-parameters" />
-      <module name="ginkgo_blog_web" options="-parameters" />
+      <module name="ginkgo_commons" options="-parameters" />
+      <module name="ginkgo_eureka" options="-parameters" />
+      <module name="ginkgo_picture" options="-parameters" />
+      <module name="ginkgo_utils" options="-parameters" />
+      <module name="ginkgo_web" options="-parameters" />
     </option>
   </component>
 </project>

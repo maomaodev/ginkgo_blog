@@ -8,6 +8,12 @@
     <option name="originalFiles">
       <list>
         <option value="$PROJECT_DIR$/pom.xml" />
+        <option value="$PROJECT_DIR$/ginkgo_web/pom.xml" />
+        <option value="$PROJECT_DIR$/ginkgo_utils/pom.xml" />
+        <option value="$PROJECT_DIR$/ginkgo_picture/pom.xml" />
+        <option value="$PROJECT_DIR$/ginkgo_commons/pom.xml" />
+        <option value="$PROJECT_DIR$/ginkgo_base/pom.xml" />
+        <option value="$PROJECT_DIR$/ginkgo_admin/pom.xml" />
       </list>
     </option>
   </component>

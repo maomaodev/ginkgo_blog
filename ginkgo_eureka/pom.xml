@@ -9,15 +9,7 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ginkgo_blog_picture</artifactId>
-
-    <dependencies>
-        <dependency>
-            <groupId>com.ginkgoblog</groupId>
-            <artifactId>ginkgo_blog_commons</artifactId>
-            <version>1.0-SNAPSHOT</version>
-        </dependency>
+    <artifactId>ginkgo_eureka</artifactId>
 
 
-    </dependencies>
 </project>

@@ -21,6 +21,7 @@
         <module>ginkgo_blog_commons</module>
         <module>ginkgo_blog_admin</module>
         <module>ginkgo_blog_picture</module>
+        <module>ginkgo_eureka</module>
     </modules>
 
     <properties>

@@ -9,13 +9,15 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>ginkgo_blog_web</artifactId>
+    <artifactId>ginkgo_admin</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.ginkgoblog</groupId>
-            <artifactId>ginkgo_blog_commons</artifactId>
+            <artifactId>ginkgo_commons</artifactId>
             <version>1.0-SNAPSHOT</version>
         </dependency>
+
+
     </dependencies>
 </project>
