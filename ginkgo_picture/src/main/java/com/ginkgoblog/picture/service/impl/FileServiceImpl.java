@@ -185,8 +185,6 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
                         dest.delete();
                     }
                 }
-
-
             }
 
             return ResultUtils.result(SystemConstants.SUCCESS, lists);

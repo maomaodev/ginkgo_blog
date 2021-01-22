@@ -16,6 +16,9 @@ public class SqlConstants {
     public static final String WEB = "web";
     public static final String ADMIN = "admin";
     public static final String TOKEN = "token";
+    public final static String CREATE_TIME = "createTime";
+    public final static String PLATFORM = "platform";
+    public final static String ACCESS_TOKEN = "accessToken";
 
     public static final String USER_UID = "userUid";
     public static final String BLOG = "blog";
@@ -50,4 +53,5 @@ public class SqlConstants {
 
     public final static String PAGE_NAME = "pageName";
     public final static String DEFAULT_VALUE = "defaultValue";
+
 }

@@ -15,12 +15,12 @@
     <version>1.0-SNAPSHOT</version>
 
     <modules>
-        <module>ginkgo_blog_web</module>
-        <module>ginkgo_blog_utils</module>
-        <module>ginkgo_blog_base</module>
-        <module>ginkgo_blog_commons</module>
-        <module>ginkgo_blog_admin</module>
-        <module>ginkgo_blog_picture</module>
+        <module>ginkgo_web</module>
+        <module>ginkgo_utils</module>
+        <module>ginkgo_base</module>
+        <module>ginkgo_commons</module>
+        <module>ginkgo_admin</module>
+        <module>ginkgo_picture</module>
         <module>ginkgo_eureka</module>
     </modules>
 

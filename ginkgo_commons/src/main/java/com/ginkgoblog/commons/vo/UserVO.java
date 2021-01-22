@@ -1,6 +1,5 @@
 package com.ginkgoblog.commons.vo;
 
-import com.baomidou.mybatisplus.annotation.TableField;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.ginkgoblog.base.vo.SuperVO;
 import lombok.Data;
@@ -10,6 +9,8 @@ import org.springframework.format.annotation.DateTimeFormat;
 import java.util.Date;
 
 /**
+ * 用户表 表现层对象
+ *
  * @author maomao
  * @date 2021-01-18
  */
