@@ -17,6 +17,8 @@ import java.io.File;
 import java.util.Map;
 
 /**
+ * 七牛云工具类
+ *
  * @author maomao
  * @date 2021-01-21
  */

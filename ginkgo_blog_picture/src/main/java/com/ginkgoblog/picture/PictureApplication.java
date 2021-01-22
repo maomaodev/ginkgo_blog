@@ -17,6 +17,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
         "com.ginkgoblog.picture.config",
         "com.ginkgoblog.picture.service",
         "com.ginkgoblog.picture.controller",
+        "com.ginkgoblog.picture.utils",
         "com.ginkgoblog.commons.config"
 })
 public class PictureApplication {

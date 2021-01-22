@@ -58,6 +58,5 @@ public class MessageConstants {
     public static final String CANNOT_CHANGE_THE_PASSWORD_BY_USER = "第三方登录的用户无法修改密码";
     public static final String RESTAPI_NO_PRIVILEGE = "您无权进行该操作";
     public static final String ACCESS_NO_PRIVILEGE = "该资源无权限访问";
-    public static final String MUST_REGISTER_FIRST = "请先注册";
 
 }

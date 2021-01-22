@@ -42,9 +42,8 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
     private FileSortService fileSortService;
 
     @Override
-    public String uploadImages(String path, List<MultipartFile> files, Map<String, String> qiNiuConfig) {
+    public String uploadImages(String path, HttpServletRequest request, List<MultipartFile> files, Map<String, String> qiNiuConfig) {
         // 获取来源
-        HttpServletRequest request = RequestHolder.getRequest();
         String source = request.getParameter(SqlConstants.SOURCE);
 
         // 如果是用户上传，则包含用户uid
@@ -76,7 +75,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
 
         // 这里可以检测用户上传，如果不是网站的用户就不能调用
         if (StringUtils.isEmpty(userUid) && StringUtils.isEmpty(adminUid)) {
-            return ResultUtils.result(SystemConstants.ERROR, MessageConstants.MUST_REGISTER_FIRST);
+            return ResultUtils.result(SystemConstants.ERROR, "请先注册");
         }
 
         QueryWrapper<FileSort> queryWrapper = new QueryWrapper<>();
