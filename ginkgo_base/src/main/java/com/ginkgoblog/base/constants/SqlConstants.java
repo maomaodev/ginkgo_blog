@@ -9,7 +9,6 @@ package com.ginkgoblog.base.constants;
 public class SqlConstants {
     public static final String UID = "uid";
     public static final String STATUS = "status";
-
     public static final String UUID = "uuid";
     public static final String SOURCE = "source";
 
@@ -51,7 +50,28 @@ public class SqlConstants {
     public static final String LIST = "list";
     public static final String JPG = "jpg";
 
+    public final static String ROLE = "role";
+    public final static String EMAIL = "email";
+    public final static String MOBILE = "mobile";
+    public final static String SORT = "sort";
+    public final static String CLICK_COUNT = "click_count";
+    public final static String IS_PUBLISH = "is_publish";
+    public final static String IS_ORIGINAL = "is_original";
+
     public final static String PAGE_NAME = "pageName";
     public final static String DEFAULT_VALUE = "defaultValue";
+    public static final String LEVEL = "level";
+    public final static String SUMMARY = "summary";
+    public static final String TagUid = "tag_uid";
+    public static final String AUTHOR = "author";
+    public static final String IS_SHOW = "is_show";
+
+    public final static String ALL = "all";
+    public final static String HTTP = "http";
+    public final static String TITLE = "title";
+    public final static String CONTENT = "content";
+    public final static String AVATAR = "avatar";
+    public final static String PASS_WORD = "passWord";
+    public final static String RECORDS = "records";
 
 }

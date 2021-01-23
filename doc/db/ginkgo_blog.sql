@@ -290,6 +290,34 @@ CREATE TABLE `t_sys_log` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统日志表';
 
 
+/*Table structure for table `t_sys_config` */
+
+DROP TABLE IF EXISTS `t_sys_config`;
+
+CREATE TABLE `t_sys_config` (
+  `uid` char(32) NOT NULL COMMENT '主键',
+  `qi_niu_access_key` varchar(255) DEFAULT NULL COMMENT '七牛云公钥',
+  `qi_niu_secret_key` varchar(255) DEFAULT NULL COMMENT '七牛云私钥',
+  `email` varchar(255) DEFAULT NULL COMMENT '邮箱账号',
+  `email_user_name` varchar(255) DEFAULT NULL COMMENT '邮箱发件人用户名',
+  `email_password` varchar(255) DEFAULT NULL COMMENT '邮箱密码',
+  `smtp_address` varchar(20) DEFAULT NULL COMMENT 'SMTP地址',
+  `smtp_port` varchar(6) DEFAULT '1' COMMENT 'SMTP端口',
+  `status` tinyint(1) DEFAULT '1' COMMENT '状态',
+  `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
+  `qi_niu_bucket` varchar(255) DEFAULT NULL COMMENT '七牛云上传空间',
+  `qi_niu_area` varchar(10) DEFAULT NULL COMMENT '七牛云存储区域 华东（z0），华北(z1)，华南(z2)，北美(na0)，东南亚(as0)',
+  `upload_qi_niu` char(1) DEFAULT '1' COMMENT '图片是否上传七牛云 (0:否， 1：是)',
+  `upload_local` char(1) DEFAULT '1' COMMENT '图片是否上传本地存储 (0:否， 1：是)',
+  `picture_priority` char(1) DEFAULT '1' COMMENT '图片显示优先级（ 1 展示 七牛云,  0 本地）',
+  `qi_niu_picture_base_url` varchar(255) DEFAULT NULL COMMENT '七牛云域名前缀：http://images.moguit.cn',
+  `local_picture_base_url` varchar(255) DEFAULT NULL COMMENT '本地服务器域名前缀：http://localhost:8600',
+  `start_email_notification` char(1) NOT NULL DEFAULT '0' COMMENT '是否开启邮件通知(0:否， 1:是)',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='系统配置表';
+
+
 /*Table structure for table `t_tag` */
 
 DROP TABLE IF EXISTS `t_tag`;
@@ -298,7 +326,7 @@ CREATE TABLE `t_tag` (
   `uid` char(32) NOT NULL COMMENT '唯一uid',
   `content` varchar(1000) DEFAULT NULL COMMENT '标签内容',
   `status` tinyint(1) unsigned NOT NULL DEFAULT '1' COMMENT '状态',
-  `click_count` int DEFAULT '0' COMMENT '标签简介',
+  `click_count` int DEFAULT '0' COMMENT '标签点击数',
   `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
   `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
   `sort` int DEFAULT '0' COMMENT '排序字段，越大越靠前',
@@ -340,4 +368,5 @@ CREATE TABLE `t_user` (
   `user_tag` tinyint(1) NOT NULL DEFAULT '0' COMMENT '用户标签：0：普通用户，1：管理员，2：博主 等',
   PRIMARY KEY (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
+
 

@@ -13,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 /**
- * 用户登录管理相关接口
+ * 用户登录 Controller 层
  *
  * @author maomao
  * @date 2021-01-20
