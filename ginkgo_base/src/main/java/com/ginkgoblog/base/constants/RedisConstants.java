@@ -22,6 +22,7 @@ public class RedisConstants {
      */
     public static final String SEGMENTATION = ":";
 
+
     /**
      * 等于
      */

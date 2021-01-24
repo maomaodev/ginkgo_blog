@@ -1,10 +1,12 @@
 package com.ginkgoblog.web.controller;
 
 import com.ginkgoblog.base.constants.SystemConstants;
+import com.ginkgoblog.base.enums.BehaviorEnum;
 import com.ginkgoblog.commons.service.BlogService;
 import com.ginkgoblog.commons.service.TagService;
 import com.ginkgoblog.utils.ResultUtils;
 import com.ginkgoblog.utils.StringUtils;
+import com.ginkgoblog.web.log.OperationLog;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -42,6 +44,7 @@ public class TagController {
 
     @ApiOperation("通过TagUid获取文章")
     @GetMapping("/getArticleByTagUid")
+    @OperationLog(value = "点击标签", behavior = BehaviorEnum.VISIT_TAG)
     public String getArticleByTagUid(
             @ApiParam(name = "tagUid", value = "标签UID") @RequestParam(name = "tagUid", required = false) String tagUid,
             @ApiParam(name = "currentPage", value = "当前页数") @RequestParam(name = "currentPage", required = false, defaultValue = "1") Long currentPage,

@@ -74,4 +74,18 @@ public class SqlConstants {
     public final static String PASS_WORD = "passWord";
     public final static String RECORDS = "records";
 
+    // AOP相关
+    public static final String BLOG_SORT_UID = "blogSortUid";
+    public static final String TAG_UID = "tagUid";
+    public static final String KEYWORDS = "keywords";
+    public static final String MONTH_DATE = "monthDate";
+    public static final String MODULE_UID = "moduleUid";
+    public static final String OTHER_DATA = "otherData";
+    public static final String COMMENT_VO = "commentVO";
+
+    public final static String OS = "OS";
+    public final static String BROWSER = "BROWSER";
+    public final static String IP_SOURCE = "IP_SOURCE";
+    public final static String IP = "ip";
+    public final static String UTF_8 = "utf-8";
 }

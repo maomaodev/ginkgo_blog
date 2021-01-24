@@ -370,3 +370,22 @@ CREATE TABLE `t_user` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
 
 
+/*Table structure for table `t_web_visit` */
+
+DROP TABLE IF EXISTS `t_web_visit`;
+
+CREATE TABLE `t_web_visit` (
+  `uid` char(32) NOT NULL COMMENT '主键',
+  `user_uid` char(32) DEFAULT NULL COMMENT '用户uid',
+  `ip` varchar(255) DEFAULT NULL COMMENT '访问ip地址',
+  `behavior` varchar(255) DEFAULT NULL COMMENT '用户行为',
+  `module_uid` varchar(255) DEFAULT NULL COMMENT '模块uid（文章uid，标签uid，分类uid）',
+  `other_data` varchar(255) DEFAULT NULL COMMENT '附加数据(比如搜索内容)',
+  `status` tinyint(1) NOT NULL DEFAULT '1' COMMENT '状态',
+  `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
+  `os` varchar(255) DEFAULT NULL COMMENT '操作系统',
+  `browser` varchar(255) DEFAULT NULL COMMENT '浏览器',
+  `ip_source` varchar(255) DEFAULT NULL COMMENT 'ip来源',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Web访问日志表';

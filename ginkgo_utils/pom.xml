@@ -34,6 +34,11 @@
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-aop</artifactId>
+        </dependency>
+
         <!-- https://github.com/lionsoul2014/ip2region -->
         <dependency>
             <groupId>org.lionsoul</groupId>
