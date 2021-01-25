@@ -12,9 +12,10 @@ import com.ginkgoblog.commons.entity.Admin;
 public interface AdminService extends IService<Admin> {
 
     /**
-     * 注册管理员
+     * Web端通过用户名获取一个Admin
      *
-     * @param admin 管理员实体
+     * @param userName
+     * @return
      */
-    void register(Admin admin);
+    Admin getAdminByUser(String userName);
 }

@@ -24,10 +24,4 @@ public class AdminController {
     @Autowired
     private AdminService adminService;
 
-    @ApiOperation("注册管理员")
-    @PostMapping("/register")
-    public String register(@ApiParam("管理员实体") Admin admin){
-        adminService.register(admin);
-        return "ok";
-    }
 }

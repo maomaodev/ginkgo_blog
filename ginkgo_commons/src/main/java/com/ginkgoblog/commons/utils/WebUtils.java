@@ -29,6 +29,37 @@ public class WebUtils {
     private SysConfigService sysConfigService;
 
     /**
+     * 格式化数据获取图片列表
+     *
+     * @param result
+     * @return
+     */
+    public List<String> getPicture(String result) {
+
+        QueryWrapper<SysConfig> queryWrapper = new QueryWrapper<>();
+        SysConfig sysConfig = sysConfigService.getOne(queryWrapper);
+        String picturePriority = sysConfig.getPicturePriority();
+        String localPictureBaseUrl = sysConfig.getLocalPictureBaseUrl();
+        String qiNiuPictureBaseUrl = sysConfig.getQiNiuPictureBaseUrl();
+
+        List<String> picUrls = new ArrayList<>();
+        Map<String, Object> picMap = (Map<String, Object>) JSON.parse(result);
+        if (SystemConstants.SUCCESS.equals(picMap.get(SystemConstants.CODE))) {
+            List<Map<String, Object>> picData = (List<Map<String, Object>>) picMap.get(SystemConstants.DATA);
+            if (picData.size() > 0) {
+                for (int i = 0; i < picData.size(); i++) {
+                    if ("1".equals(picturePriority)) {
+                        picUrls.add(qiNiuPictureBaseUrl + picData.get(i).get(SqlConstants.QI_NIU_URL));
+                    } else {
+                        picUrls.add(localPictureBaseUrl + picData.get(i).get(SqlConstants.URL));
+                    }
+                }
+            }
+        }
+        return picUrls;
+    }
+
+    /**
      * 获取图片，返回Map
      *
      * @param result

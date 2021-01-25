@@ -263,7 +263,7 @@ CREATE TABLE `t_role` (
   `summary` varchar(255) DEFAULT NULL COMMENT '角色介绍',
   `category_menu_uids` text COMMENT '角色管辖的菜单的UID',
   PRIMARY KEY (`uid`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='角色表';
 
 
 /*Table structure for table `t_sys_log` */
@@ -368,6 +368,37 @@ CREATE TABLE `t_user` (
   `user_tag` tinyint(1) NOT NULL DEFAULT '0' COMMENT '用户标签：0：普通用户，1：管理员，2：博主 等',
   PRIMARY KEY (`uid`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='用户表';
+
+
+/*Table structure for table `t_web_config` */
+
+DROP TABLE IF EXISTS `t_web_config`;
+
+CREATE TABLE `t_web_config` (
+  `uid` char(32) NOT NULL COMMENT '主键',
+  `logo` varchar(255) NOT NULL COMMENT 'logo(文件UID)',
+  `name` varchar(255) NOT NULL COMMENT '网站名称',
+  `summary` varchar(255) NOT NULL COMMENT '介绍',
+  `keyword` varchar(255) NOT NULL COMMENT '关键字',
+  `author` varchar(255) NOT NULL COMMENT '作者',
+  `record_num` varchar(255) NOT NULL COMMENT '备案号',
+  `start_comment` varchar(1) DEFAULT '1' COMMENT '是否开启评论(0:否 1:是)',
+  `status` tinyint(1) DEFAULT '1' COMMENT '状态',
+  `create_time` datetime NOT NULL DEFAULT now() COMMENT '创建时间',
+  `update_time` datetime NOT NULL DEFAULT now() COMMENT '更新时间',
+  `title` varchar(255) DEFAULT NULL COMMENT '标题',
+  `ali_pay` varchar(32) DEFAULT NULL COMMENT '支付宝收款码FileId',
+  `weixin_pay` varchar(32) DEFAULT NULL COMMENT '微信收款码FileId',
+  `github` varchar(255) DEFAULT NULL COMMENT 'github地址',
+  `gitee` varchar(255) DEFAULT NULL COMMENT 'gitee地址',
+  `qq_number` varchar(20) DEFAULT NULL COMMENT 'QQ号',
+  `qq_group` varchar(20) DEFAULT NULL COMMENT 'QQ群',
+  `we_chat` varchar(255) DEFAULT NULL COMMENT '微信号',
+  `email` varchar(255) DEFAULT NULL COMMENT '邮箱',
+  `show_list` varchar(255) DEFAULT NULL COMMENT '显示的列表（用于控制邮箱、QQ、QQ群、Github、Gitee、微信是否显示在前端）',
+  `login_type_list` varchar(255) DEFAULT NULL COMMENT '登录方式列表（用于控制前端登录方式，如账号密码,码云,Github,QQ,微信）',
+  PRIMARY KEY (`uid`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='网站配置表';
 
 
 /*Table structure for table `t_web_visit` */

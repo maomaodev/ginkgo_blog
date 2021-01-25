@@ -18,6 +18,7 @@ public class SqlConstants {
     public final static String CREATE_TIME = "createTime";
     public final static String PLATFORM = "platform";
     public final static String ACCESS_TOKEN = "accessToken";
+    public final static String FILE_SEGMENTATION = ",";
 
     public static final String USER_UID = "userUid";
     public static final String BLOG = "blog";

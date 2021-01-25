@@ -13,6 +13,15 @@ import java.util.List;
  * @date 2021-01-17
  */
 public interface BlogService extends IService<Blog> {
+
+    /**
+     * 给博客列表设置分类和标签
+     *
+     * @param list
+     * @return
+     */
+    List<Blog> setTagAndSortByBlogList(List<Blog> list);
+
     /**
      * 给博客列表设置分类，标签，图片
      *
@@ -31,4 +40,19 @@ public interface BlogService extends IService<Blog> {
      * @return
      */
     IPage<Blog> searchBlogByTag(String tagUid, Long currentPage, Long pageSize);
+
+    /**
+     * 获取博客的归档日期
+     *
+     * @return
+     */
+    String getBlogTimeSortList();
+
+    /**
+     * 通过月份获取日期
+     *
+     * @param monthDate
+     * @return
+     */
+    String getArticleByMonth(String monthDate);
 }
