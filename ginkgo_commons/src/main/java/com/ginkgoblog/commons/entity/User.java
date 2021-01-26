@@ -90,6 +90,11 @@ public class User extends SuperEntity {
     private Integer loginCount;
 
     /**
+     * 验证码
+     */
+    private String validCode;
+
+    /**
      * 资料来源
      */
     private String source;

@@ -30,6 +30,21 @@ public interface BlogService extends IService<Blog> {
      */
     List<Blog> setTagAndSortAndPictureByBlogList(List<Blog> list);
 
+    /**
+     * 给博客设置标签
+     *
+     * @param blog
+     * @return
+     */
+    Blog setTagByBlog(Blog blog);
+
+    /**
+     * 给博客设置分类
+     *
+     * @param blog
+     * @return
+     */
+    Blog setSortByBlog(Blog blog);
 
     /**
      * 通过标签搜索博客
@@ -40,6 +55,14 @@ public interface BlogService extends IService<Blog> {
      * @return
      */
     IPage<Blog> searchBlogByTag(String tagUid, Long currentPage, Long pageSize);
+
+    /**
+     * 根据BlogUid获取相关的博客
+     *
+     * @param blogUid
+     * @return
+     */
+    List<Blog> getSameBlogByBlogUid(String blogUid);
 
     /**
      * 获取博客的归档日期
@@ -55,4 +78,39 @@ public interface BlogService extends IService<Blog> {
      * @return
      */
     String getArticleByMonth(String monthDate);
+
+    /**
+     * 通过博客Uid获取点赞数
+     *
+     * @param uid
+     * @return
+     */
+    Integer getBlogPraiseCountByUid(String uid);
+
+    /**
+     * 通过UID给博客点赞
+     *
+     * @param uid
+     * @return
+     */
+     String praiseBlogByUid(String uid);
+
+    /**
+     * 根据标签Uid获取相关的博客
+     *
+     * @param tagUid
+     * @return
+     */
+    IPage<Blog> getSameBlogByTagUid(String tagUid);
+
+    /**
+     * 通过博客分类UID获取博客列表
+     *
+     * @param blogSortUid
+     * @param currentPage
+     * @param pageSize
+     * @return
+     */
+    IPage<Blog> getListByBlogSortUid(String blogSortUid, Long currentPage, Long pageSize);
+
 }

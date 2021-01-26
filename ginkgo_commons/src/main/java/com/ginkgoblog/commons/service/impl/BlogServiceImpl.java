@@ -9,16 +9,20 @@ import com.ginkgoblog.base.constants.MessageConstants;
 import com.ginkgoblog.base.constants.RedisConstants;
 import com.ginkgoblog.base.constants.SqlConstants;
 import com.ginkgoblog.base.constants.SystemConstants;
+import com.ginkgoblog.base.enums.CommentSourceEnum;
+import com.ginkgoblog.base.enums.CommentTypeEnum;
 import com.ginkgoblog.base.enums.PublishEnum;
 import com.ginkgoblog.base.enums.StatusEnum;
 import com.ginkgoblog.base.holder.RequestHolder;
 import com.ginkgoblog.commons.entity.Blog;
 import com.ginkgoblog.commons.entity.BlogSort;
+import com.ginkgoblog.commons.entity.Comment;
 import com.ginkgoblog.commons.entity.Tag;
 import com.ginkgoblog.commons.feign.PictureFeignClient;
 import com.ginkgoblog.commons.mapper.BlogMapper;
 import com.ginkgoblog.commons.service.BlogService;
 import com.ginkgoblog.commons.service.BlogSortService;
+import com.ginkgoblog.commons.service.CommentService;
 import com.ginkgoblog.commons.service.TagService;
 import com.ginkgoblog.commons.utils.WebUtils;
 import com.ginkgoblog.utils.IpUtils;
@@ -45,6 +49,8 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
 
     @Autowired
     private WebUtils webUtils;
+    @Autowired
+    private CommentService commentService;
     @Autowired
     private TagService tagService;
     @Autowired
@@ -184,6 +190,32 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
     }
 
     @Override
+    public Blog setTagByBlog(Blog blog) {
+        String tagUid = blog.getTagUid();
+        if (!StringUtils.isEmpty(tagUid)) {
+            String[] uids = tagUid.split(SqlConstants.FILE_SEGMENTATION);
+            List<Tag> tagList = new ArrayList<>();
+            for (String uid : uids) {
+                Tag tag = tagService.getById(uid);
+                if (tag != null && tag.getStatus() != StatusEnum.DISABLED) {
+                    tagList.add(tag);
+                }
+            }
+            blog.setTagList(tagList);
+        }
+        return blog;
+    }
+
+    @Override
+    public Blog setSortByBlog(Blog blog) {
+        if (blog != null && !StringUtils.isEmpty(blog.getBlogSortUid())) {
+            BlogSort blogSort = blogSortService.getById(blog.getBlogSortUid());
+            blog.setBlogSort(blogSort);
+        }
+        return blog;
+    }
+
+    @Override
     public IPage<Blog> searchBlogByTag(String tagUid, Long currentPage, Long pageSize) {
         Tag tag = tagService.getById(tagUid);
         if (tag != null) {
@@ -219,6 +251,36 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         list = this.setTagAndSortAndPictureByBlogList(list);
         pageList.setRecords(list);
         return pageList;
+    }
+
+    @Override
+    public List<Blog> getSameBlogByBlogUid(String blogUid) {
+        Blog blog = this.getById(blogUid);
+        QueryWrapper<Blog> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(SqlConstants.STATUS, StatusEnum.ENABLE);
+        Page<Blog> page = new Page<>();
+        page.setCurrent(1);
+        page.setSize(10);
+
+        // 通过分类来获取相关博客
+        String blogSortUid = blog.getBlogSortUid();
+        queryWrapper.eq(SqlConstants.BLOG_SORT_UID, blogSortUid);
+        queryWrapper.eq(SqlConstants.IS_PUBLISH, PublishEnum.PUBLISH);
+        queryWrapper.orderByDesc(SqlConstants.CREATE_TIME);
+
+        IPage<Blog> pageList = this.page(page, queryWrapper);
+        List<Blog> list = pageList.getRecords();
+        list = this.setTagAndSortByBlogList(list);
+
+        // 过滤掉当前的博客
+        List<Blog> newList = new ArrayList<>();
+        for (Blog item : list) {
+            if (item.getUid().equals(blogUid)) {
+                continue;
+            }
+            newList.add(item);
+        }
+        return newList;
     }
 
     @Override
@@ -316,5 +378,116 @@ public class BlogServiceImpl extends ServiceImpl<BlogMapper, Blog> implements Bl
         // 将从数据库查询的数据缓存到redis中
         redisTemplate.opsForValue().set(RedisConstants.MONTH_SET, JsonUtils.objectToJson(monthSet));
         return ResultUtils.result(SystemConstants.SUCCESS, map.get(monthDate));
+    }
+
+    @Override
+    public Integer getBlogPraiseCountByUid(String uid) {
+        int pariseCount = 0;
+        if (StringUtils.isEmpty(uid)) {
+            log.error("传入的UID为空");
+            return pariseCount;
+        }
+        //从Redis取出用户点赞数据
+        String pariseJsonResult = redisTemplate.opsForValue().get(
+                RedisConstants.BLOG_PRAISE + RedisConstants.SEGMENTATION + uid);
+        if (!StringUtils.isEmpty(pariseJsonResult)) {
+            pariseCount = Integer.parseInt(pariseJsonResult);
+        }
+        return pariseCount;
+    }
+
+    @Override
+    public String praiseBlogByUid(String uid) {
+        if (StringUtils.isEmpty(uid)) {
+            return ResultUtils.result(SystemConstants.ERROR, MessageConstants.PARAM_INCORRECT);
+        }
+
+        HttpServletRequest request = RequestHolder.getRequest();
+        // 如果用户登录了
+        if (request.getAttribute(SqlConstants.USER_UID) != null) {
+            String userUid = request.getAttribute(SqlConstants.USER_UID).toString();
+            QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq(SqlConstants.USER_UID, userUid);
+            queryWrapper.eq(SqlConstants.BLOG_UID, uid);
+            queryWrapper.eq(SqlConstants.TYPE, CommentTypeEnum.PRAISE);
+            queryWrapper.last("LIMIT 1");
+            Comment praise = commentService.getOne(queryWrapper);
+            if (praise != null) {
+                return ResultUtils.result(SystemConstants.ERROR, MessageConstants.YOU_HAVE_BEEN_PRISE);
+            }
+        } else {
+            return ResultUtils.result(SystemConstants.ERROR, MessageConstants.PLEASE_LOGIN_TO_PRISE);
+        }
+
+        Blog blog = this.getById(uid);
+        String pariseJsonResult = redisTemplate.opsForValue().get(RedisConstants.BLOG_PRAISE + RedisConstants.SEGMENTATION + uid);
+
+        if (StringUtils.isEmpty(pariseJsonResult)) {
+            //给该博客点赞数
+            redisTemplate.opsForValue().set(RedisConstants.BLOG_PRAISE + RedisConstants.SEGMENTATION + uid, "1");
+            blog.setCollectCount(1);
+            blog.updateById();
+
+        } else {
+            Integer count = blog.getCollectCount() + 1;
+            //给该博客点赞 +1
+            redisTemplate.opsForValue().set(RedisConstants.BLOG_PRAISE + RedisConstants.SEGMENTATION + uid,
+                    count.toString());
+            blog.setCollectCount(count);
+            blog.updateById();
+        }
+
+        // 已登录用户，向评论表添加点赞数据
+        if (request.getAttribute(SqlConstants.USER_UID) != null) {
+            String userUid = request.getAttribute(SqlConstants.USER_UID).toString();
+            Comment comment = new Comment();
+            comment.setUserUid(userUid);
+            comment.setBlogUid(uid);
+            comment.setSource(CommentSourceEnum.BLOG_INFO.getCode());
+            comment.setType(CommentTypeEnum.PRAISE);
+            comment.insert();
+        }
+        return ResultUtils.result(SystemConstants.SUCCESS, blog.getCollectCount());
+    }
+
+    @Override
+    public IPage<Blog> getSameBlogByTagUid(String tagUid) {
+        QueryWrapper<Blog> queryWrapper = new QueryWrapper<>();
+        Page<Blog> page = new Page<>();
+        page.setCurrent(1);
+        page.setSize(10);
+
+        queryWrapper.eq(SqlConstants.TAG_UID, tagUid);
+        queryWrapper.orderByDesc(SqlConstants.CREATE_TIME);
+        queryWrapper.eq(SqlConstants.STATUS, StatusEnum.ENABLE);
+        queryWrapper.eq(SqlConstants.IS_PUBLISH, PublishEnum.PUBLISH);
+
+        IPage<Blog> pageList = this.page(page, queryWrapper);
+        List<Blog> list = pageList.getRecords();
+        list = this.setTagAndSortByBlogList(list);
+        pageList.setRecords(list);
+        return pageList;
+    }
+
+    @Override
+    public IPage<Blog> getListByBlogSortUid(String blogSortUid, Long currentPage, Long pageSize) {
+        Page<Blog> page = new Page<>();
+        page.setCurrent(currentPage);
+        page.setSize(pageSize);
+
+        QueryWrapper<Blog> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq(SqlConstants.STATUS, StatusEnum.ENABLE);
+        queryWrapper.orderByDesc(SqlConstants.CREATE_TIME);
+        queryWrapper.eq(SqlConstants.IS_PUBLISH, PublishEnum.PUBLISH);
+        queryWrapper.eq(SqlConstants.BLOG_SORT_UID, blogSortUid);
+
+        // 因为首页并不需要显示内容，所以需要排除掉内容字段
+        queryWrapper.select(Blog.class, i -> !i.getProperty().equals(SqlConstants.CONTENT));
+        IPage<Blog> pageList = this.page(page, queryWrapper);
+
+        // 给博客增加标签和分类
+        List<Blog> list = this.setTagAndSortByBlogList(pageList.getRecords());
+        pageList.setRecords(list);
+        return pageList;
     }
 }

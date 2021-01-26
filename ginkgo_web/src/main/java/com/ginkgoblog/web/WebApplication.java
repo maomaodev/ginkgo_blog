@@ -21,6 +21,7 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
         "com.ginkgoblog.web.config",
         "com.ginkgoblog.web.controller",
         "com.ginkgoblog.web.log",
+        "com.ginkgoblog.web.utils",
         "com.ginkgoblog.commons.config",
         "com.ginkgoblog.commons.service",
         "com.ginkgoblog.commons.utils"
