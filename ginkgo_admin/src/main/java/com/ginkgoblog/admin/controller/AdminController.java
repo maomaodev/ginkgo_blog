@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
+ * 管理员 Controller 层
+ *
  * @author maomao
  * @date 2021-01-13
  */

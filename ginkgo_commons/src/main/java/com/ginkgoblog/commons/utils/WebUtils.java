@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ginkgoblog.base.constants.SqlConstants;
 import com.ginkgoblog.base.constants.SystemConstants;
-import com.ginkgoblog.base.enums.OpenStatusEnum;
+import com.ginkgoblog.base.enums.EOpenStatus;
 import com.ginkgoblog.commons.entity.SysConfig;
 import com.ginkgoblog.commons.service.SysConfigService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -86,7 +86,7 @@ public class WebUtils {
                         continue;
                     }
                     // 图片优先显示 七牛云 or 本地
-                    if (OpenStatusEnum.OPEN.equals(picturePriority)) {
+                    if (EOpenStatus.OPEN.equals(picturePriority)) {
                         map.put(SqlConstants.URL, qiNiuPictureBaseUrl + picData.get(i).get(SqlConstants.QI_NIU_URL));
                     } else {
                         map.put(SqlConstants.URL, localPictureBaseUrl + picData.get(i).get(SqlConstants.URL));

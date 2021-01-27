@@ -6,7 +6,7 @@ package com.ginkgoblog.base.enums;
  * @author maomao
  * @date 2021-01-22
  */
-public class OpenStatusEnum {
+public class EOpenStatus {
     /**
      * 关闭
      */

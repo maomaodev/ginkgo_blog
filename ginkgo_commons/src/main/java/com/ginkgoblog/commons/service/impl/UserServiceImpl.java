@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ginkgoblog.base.constants.MessageConstants;
 import com.ginkgoblog.base.constants.SqlConstants;
 import com.ginkgoblog.base.constants.SystemConstants;
-import com.ginkgoblog.base.enums.StatusEnum;
+import com.ginkgoblog.base.enums.EStatus;
 import com.ginkgoblog.base.holder.RequestHolder;
 import com.ginkgoblog.commons.entity.User;
 import com.ginkgoblog.commons.mapper.UserMapper;
@@ -123,7 +123,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Override
     public String deleteUser(UserVO userVO) {
         User user = this.getById(userVO.getUid());
-        user.setStatus(StatusEnum.DISABLED);
+        user.setStatus(EStatus.DISABLED);
         user.updateById();
         return ResultUtils.result(SystemConstants.SUCCESS, MessageConstants.DELETE_SUCCESS);
     }

@@ -1,6 +1,5 @@
-package com.ginkgoblog.web.log;
+package com.ginkgoblog.admin.log;
 
-import com.ginkgoblog.base.enums.EBehavior;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -8,23 +7,19 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * 日志记录、自定义注解
+ * 标注该该注解的方法需要记录操作日志
  *
  * @author maomao
- * @date 2021-01-24
+ * @date 2021-01-27
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-public @interface OperationLog {
+public @interface OperationLogger {
+
     /**
      * 业务名称
      */
     String value() default "";
-
-    /**
-     * 用户行为
-     */
-    EBehavior behavior();
 
     /**
      * 是否将当前日志记录到数据库中

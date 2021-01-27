@@ -3,11 +3,9 @@ package com.ginkgoblog.picture.service.impl;
 import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ginkgoblog.base.constants.MessageConstants;
 import com.ginkgoblog.base.constants.SqlConstants;
 import com.ginkgoblog.base.constants.SystemConstants;
-import com.ginkgoblog.base.enums.StatusEnum;
-import com.ginkgoblog.base.holder.RequestHolder;
+import com.ginkgoblog.base.enums.EStatus;
 import com.ginkgoblog.picture.entity.File;
 import com.ginkgoblog.picture.entity.FileSort;
 import com.ginkgoblog.picture.mapper.FileMapper;
@@ -24,7 +22,6 @@ import javax.servlet.http.HttpServletRequest;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -81,7 +78,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
         QueryWrapper<FileSort> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(SqlConstants.SORT_NAME, sortName)
                 .eq(SqlConstants.PROJECT_NAME, projectName)
-                .eq(SqlConstants.STATUS, StatusEnum.ENABLE);
+                .eq(SqlConstants.STATUS, EStatus.ENABLE);
         List<FileSort> fileSorts = fileSortService.list(queryWrapper);
 
         FileSort fileSort;
@@ -169,7 +166,7 @@ public class FileServiceImpl extends ServiceImpl<FileMapper, File> implements Fi
                     picFile.setPicExpandedName(picExpandedName);
                     picFile.setPicName(newFileName);
                     picFile.setPicUrl(picurl);
-                    picFile.setStatus(StatusEnum.ENABLE);
+                    picFile.setStatus(EStatus.ENABLE);
                     picFile.setUserUid(userUid);
                     picFile.setAdminUid(adminUid);
                     picFile.setQiNiuUrl(qiNiuUrl);

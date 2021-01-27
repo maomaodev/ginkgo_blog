@@ -1,7 +1,7 @@
 package com.ginkgoblog.web.controller;
 
 import com.ginkgoblog.base.constants.SystemConstants;
-import com.ginkgoblog.base.enums.BehaviorEnum;
+import com.ginkgoblog.base.enums.EBehavior;
 import com.ginkgoblog.commons.service.BlogService;
 import com.ginkgoblog.commons.service.BlogSortService;
 import com.ginkgoblog.utils.ResultUtils;
@@ -16,8 +16,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-
-import javax.servlet.http.HttpServletRequest;
 
 /**
  * 用户登录 Controller 层
@@ -43,7 +41,7 @@ public class ClassifyController {
         return ResultUtils.result(SystemConstants.SUCCESS, blogSortService.getList());
     }
 
-    @OperationLog(value = "点击分类", behavior = BehaviorEnum.VISIT_CLASSIFY)
+    @OperationLog(value = "点击分类", behavior = EBehavior.VISIT_CLASSIFY)
     @ApiOperation("通过blogSortUid获取文章")
     @GetMapping("/getArticleByBlogSortUid")
     public String getArticleByBlogSortUid(

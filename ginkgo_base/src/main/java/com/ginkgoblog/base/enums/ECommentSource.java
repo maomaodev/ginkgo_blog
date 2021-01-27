@@ -6,7 +6,7 @@ package com.ginkgoblog.base.enums;
  * @author maomao
  * @date 2021-01-26
  */
-public enum CommentSourceEnum {
+public enum ECommentSource {
     /**
      * 关于我
      */
@@ -25,7 +25,7 @@ public enum CommentSourceEnum {
     private final String code;
     private final String name;
 
-    CommentSourceEnum(String code, String name) {
+    ECommentSource(String code, String name) {
         this.code = code;
         this.name = name;
     }

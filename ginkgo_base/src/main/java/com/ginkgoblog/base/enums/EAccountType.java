@@ -1,42 +1,47 @@
 package com.ginkgoblog.base.enums;
 
 /**
- * 七牛云存储空间枚举类
+ * 社交账号类型枚举类
  *
  * @author maomao
- * @date 2021-01-21
+ * @date 2021-01-25
  */
-public enum QiNiuAreaEnum {
+public enum EAccountType {
     /**
-     * 华东
+     * 邮箱
      */
-    z0("z0", "华东"),
+    EMail("1", "邮箱"),
 
     /**
-     * 华北
+     * QQ号
      */
-    z1("z1", "华北"),
+    QQNumber("2", "QQ号"),
 
     /**
-     * 华南
+     * QQ群
      */
-    z2("z2", "华南"),
+    QQGroup("3", "QQ群"),
 
     /**
-     * 北美
+     * Github
      */
-    na0("na0", "北美"),
+    Github("4", "Github"),
 
     /**
-     * 东南亚
+     * Gitee
      */
-    as0("as0", "东南亚");
+    Gitee("5", "Gitee"),
+
+    /**
+     * 微信
+     */
+    WeChat("5", "微信");
 
 
     private final String code;
     private final String name;
 
-    QiNiuAreaEnum(String code, String name) {
+    EAccountType(String code, String name) {
         this.code = code;
         this.name = name;
     }

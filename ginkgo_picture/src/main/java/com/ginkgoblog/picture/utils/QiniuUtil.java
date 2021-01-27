@@ -2,7 +2,7 @@ package com.ginkgoblog.picture.utils;
 
 import com.alibaba.fastjson.JSON;
 import com.ginkgoblog.base.constants.SqlConstants;
-import com.ginkgoblog.base.enums.QiNiuAreaEnum;
+import com.ginkgoblog.base.enums.EQiNiuArea;
 import com.ginkgoblog.utils.StringUtils;
 import com.qiniu.common.QiniuException;
 import com.qiniu.common.Zone;
@@ -65,7 +65,7 @@ public class QiniuUtil {
         Configuration cfg = null;
 
         //zong2() 代表华南地区
-        switch (QiNiuAreaEnum.valueOf(area).getCode()) {
+        switch (EQiNiuArea.valueOf(area).getCode()) {
             case "z0":
                 cfg = new Configuration(Zone.zone0());
                 break;

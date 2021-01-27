@@ -6,7 +6,7 @@ package com.ginkgoblog.base.enums;
  * @author maomao
  * @date 2021-01-26
  */
-public class CommentTypeEnum {
+public class ECommentType {
     /**
      * 评论
      */

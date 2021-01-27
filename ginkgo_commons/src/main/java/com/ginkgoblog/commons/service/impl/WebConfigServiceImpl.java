@@ -4,7 +4,7 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ginkgoblog.base.constants.SqlConstants;
-import com.ginkgoblog.base.enums.AccountTypeEnum;
+import com.ginkgoblog.base.enums.EAccountType;
 import com.ginkgoblog.commons.entity.WebConfig;
 import com.ginkgoblog.commons.feign.PictureFeignClient;
 import com.ginkgoblog.commons.mapper.WebConfigMapper;
@@ -76,22 +76,22 @@ public class WebConfigServiceImpl extends ServiceImpl<WebConfigMapper, WebConfig
         List<String> showList = JSON.parseArray(showListJson, String.class);
 
         for (String item : showList) {
-            if (AccountTypeEnum.EMail.getCode().equals(item)) {
+            if (EAccountType.EMail.getCode().equals(item)) {
                 webConfig.setEmail(email);
             }
-            if (AccountTypeEnum.QQNumber.getCode().equals(item)) {
+            if (EAccountType.QQNumber.getCode().equals(item)) {
                 webConfig.setQqNumber(qqNumber);
             }
-            if (AccountTypeEnum.QQGroup.getCode().equals(item)) {
+            if (EAccountType.QQGroup.getCode().equals(item)) {
                 webConfig.setQqGroup(qqGroup);
             }
-            if (AccountTypeEnum.Github.getCode().equals(item)) {
+            if (EAccountType.Github.getCode().equals(item)) {
                 webConfig.setGithub(github);
             }
-            if (AccountTypeEnum.Gitee.getCode().equals(item)) {
+            if (EAccountType.Gitee.getCode().equals(item)) {
                 webConfig.setGitee(gitee);
             }
-            if (AccountTypeEnum.WeChat.getCode().equals(item)) {
+            if (EAccountType.WeChat.getCode().equals(item)) {
                 webConfig.setWeChat(weChat);
             }
         }

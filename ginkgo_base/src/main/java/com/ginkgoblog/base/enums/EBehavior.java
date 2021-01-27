@@ -12,7 +12,7 @@ import java.util.Map;
  * @author maomao
  * @date 2021-01-24
  */
-public enum BehaviorEnum {
+public enum EBehavior {
 
     BLOG_TAG("点击标签", "blog_tag"),
     BLOG_SORT("点击博客分类", "blog_sort"),
@@ -33,12 +33,12 @@ public enum BehaviorEnum {
     private String content;
     private String behavior;
 
-    BehaviorEnum(String content, String behavior) {
+    EBehavior(String content, String behavior) {
         this.content = content;
         this.behavior = behavior;
     }
 
-    public static Map<String, String> getModuleAndOtherData(BehaviorEnum behavior, Map<String, Object> nameAndArgsMap, String bussinessName) {
+    public static Map<String, String> getModuleAndOtherData(EBehavior behavior, Map<String, Object> nameAndArgsMap, String bussinessName) {
         String otherData = "";
         String moduleUid = "";
         switch (behavior) {

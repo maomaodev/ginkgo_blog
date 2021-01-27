@@ -6,7 +6,7 @@ package com.ginkgoblog.base.enums;
  * @author maomao
  * @date 2021-01-19
  */
-public class StatusEnum {
+public class EStatus {
     /**
      * 删除的
      */

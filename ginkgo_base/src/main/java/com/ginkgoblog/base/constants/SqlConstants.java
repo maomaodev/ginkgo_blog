@@ -8,9 +8,12 @@ package com.ginkgoblog.base.constants;
  */
 public class SqlConstants {
     public static final String UID = "uid";
+    public final static String TO_UID = "to_uid";
     public static final String STATUS = "status";
     public static final String UUID = "uuid";
     public static final String SOURCE = "source";
+    public final static String LINK_STATUS = "link_status";
+    public final static String FEEDBACK_STATUS = "feedback_status";
 
     public static final String WEB = "web";
     public static final String ADMIN = "admin";
@@ -19,8 +22,10 @@ public class SqlConstants {
     public static final String PLATFORM = "platform";
     public static final String ACCESS_TOKEN = "accessToken";
     public static final String FILE_SEGMENTATION = ",";
+    public static final String FIRST_COMMENT_UID = "first_comment_uid";
 
     public static final String USER_UID = "userUid";
+    public final static String TO_USER_UID = "to_user_uid";
     public static final String BLOG = "blog";
     public static final String TYPE = "type";
     public static final String BLOG_UID = "blog_uid";
@@ -99,4 +104,16 @@ public class SqlConstants {
     public static final String TO_TEXT = "to_text";
     public static final String RECEIVER = "receiver";
     public static final String TO_NICKNAME = "to_nickname";
+
+    public static final int ZERO = 0;
+    public static final int ONE = 1;
+    public static final int TWO = 2;
+    public static final int THREE = 3;
+    public static final int FOUR = 4;
+    public static final int FIVE = 5;
+    public static final int SIX = 6;
+    public static final int SEVEN = 7;
+    public static final int EIGHT = 8;
+    public static final int NINE = 9;
+    public static final int TEN = 10;
 }

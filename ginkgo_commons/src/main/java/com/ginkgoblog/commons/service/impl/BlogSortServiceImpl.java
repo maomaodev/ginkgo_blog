@@ -3,7 +3,7 @@ package com.ginkgoblog.commons.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.ginkgoblog.base.constants.SqlConstants;
-import com.ginkgoblog.base.enums.StatusEnum;
+import com.ginkgoblog.base.enums.EStatus;
 import com.ginkgoblog.commons.entity.BlogSort;
 import com.ginkgoblog.commons.mapper.BlogSortMapper;
 import com.ginkgoblog.commons.service.BlogSortService;
@@ -24,7 +24,7 @@ public class BlogSortServiceImpl extends ServiceImpl<BlogSortMapper, BlogSort> i
     @Override
     public List<BlogSort> getList() {
         QueryWrapper<BlogSort> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(SqlConstants.STATUS, StatusEnum.ENABLE);
+        queryWrapper.eq(SqlConstants.STATUS, EStatus.ENABLE);
         queryWrapper.orderByDesc(SqlConstants.SORT);
         return this.list(queryWrapper);
     }

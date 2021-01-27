@@ -4,9 +4,9 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ginkgoblog.base.constants.CodeConstants;
 import com.ginkgoblog.base.constants.SystemConstants;
-import com.ginkgoblog.base.enums.BehaviorEnum;
-import com.ginkgoblog.base.enums.PublishEnum;
-import com.ginkgoblog.base.enums.StatusEnum;
+import com.ginkgoblog.base.enums.EBehavior;
+import com.ginkgoblog.base.enums.EPublish;
+import com.ginkgoblog.base.enums.EStatus;
 import com.ginkgoblog.base.holder.RequestHolder;
 import com.ginkgoblog.commons.entity.Blog;
 import com.ginkgoblog.commons.feign.PictureFeignClient;
@@ -57,7 +57,7 @@ public class BlogContentController {
     @Value(value = "${BLOG.REPRINTED_TEMPLATE}")
     private String REPRINTED_TEMPLATE;
 
-    @OperationLog(value = "点击博客", behavior = BehaviorEnum.BLOG_CONTENT)
+    @OperationLog(value = "点击博客", behavior = EBehavior.BLOG_CONTENT)
     @ApiOperation(value = "通过Uid获取博客内容", notes = "通过Uid获取博客内容")
     @GetMapping("/getBlogByUid")
     public String getBlogByUid(@ApiParam(name = "uid", value = "博客UID", required = false) @RequestParam(name = "uid", required = false) String uid) {
@@ -68,8 +68,8 @@ public class BlogContentController {
         HttpServletRequest request = RequestHolder.getRequest();
         String ip = IpUtils.getIpAddr(request);
         Blog blog = blogService.getById(uid);
-        if (blog == null || blog.getStatus() == StatusEnum.DISABLED
-                || blog.getIsPublish().equals(PublishEnum.NO_PUBLISH)) {
+        if (blog == null || blog.getStatus() == EStatus.DISABLED
+                || blog.getIsPublish().equals(EPublish.NO_PUBLISH)) {
             return ResultUtils.result(CodeConstants.ERROR, "该文章已下架或被删除");
         }
 
@@ -104,7 +104,7 @@ public class BlogContentController {
         return ResultUtils.result(SystemConstants.SUCCESS, blogService.getBlogPraiseCountByUid(uid));
     }
 
-    @OperationLog(value = "通过Uid给博客点赞", behavior = BehaviorEnum.BLOG_PRAISE)
+    @OperationLog(value = "通过Uid给博客点赞", behavior = EBehavior.BLOG_PRAISE)
     @ApiOperation("通过Uid给博客点赞")
     @GetMapping("/praiseBlogByUid")
     public String praiseBlogByUid(@ApiParam(name = "uid", value = "博客UID") @RequestParam(name = "uid", required = false) String uid) {

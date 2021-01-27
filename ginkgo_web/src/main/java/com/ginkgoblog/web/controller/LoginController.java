@@ -5,7 +5,7 @@ import com.ginkgoblog.base.constants.MessageConstants;
 import com.ginkgoblog.base.constants.RedisConstants;
 import com.ginkgoblog.base.constants.SqlConstants;
 import com.ginkgoblog.base.constants.SystemConstants;
-import com.ginkgoblog.base.enums.StatusEnum;
+import com.ginkgoblog.base.enums.EStatus;
 import com.ginkgoblog.base.holder.RequestHolder;
 import com.ginkgoblog.commons.entity.User;
 import com.ginkgoblog.commons.feign.PictureFeignClient;
@@ -25,7 +25,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -68,10 +67,10 @@ public class LoginController {
                 .or().eq(SqlConstants.EMAIL, userName));
         queryWrapper.last("limit 1");
         User user = userService.getOne(queryWrapper);
-        if (user == null || StatusEnum.DISABLED == user.getStatus()) {
+        if (user == null || EStatus.DISABLED == user.getStatus()) {
             return ResultUtils.result(SystemConstants.ERROR, "用户不存在");
         }
-        if (StatusEnum.FREEZE == user.getStatus()) {
+        if (EStatus.FREEZE == user.getStatus()) {
             return ResultUtils.result(SystemConstants.ERROR, "用户账号未激活");
         }
 
@@ -122,7 +121,7 @@ public class LoginController {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.and(wrapper -> wrapper.eq(SqlConstants.USER_NAME, userVO.getUserName())
                 .or().eq(SqlConstants.EMAIL, userVO.getEmail()));
-        queryWrapper.eq(SqlConstants.STATUS, StatusEnum.ENABLE);
+        queryWrapper.eq(SqlConstants.STATUS, EStatus.ENABLE);
         User user = userService.getOne(queryWrapper);
         if (user != null) {
             return ResultUtils.result(SystemConstants.ERROR, "用户已存在");
@@ -142,7 +141,7 @@ public class LoginController {
         user.setLastLoginIp(ip);
         user.setBrowser(map.get(SqlConstants.BROWSER));
         user.setOs(map.get(SqlConstants.OS));
-        user.setStatus(StatusEnum.FREEZE);
+        user.setStatus(EStatus.FREEZE);
         user.insert();
 
         // 生成随机激活的token
@@ -168,11 +167,11 @@ public class LoginController {
         }
 
         User user = JsonUtils.jsonToPojo(userInfo, User.class);
-        if (StatusEnum.FREEZE != user.getStatus()) {
+        if (EStatus.FREEZE != user.getStatus()) {
             return ResultUtils.result(SystemConstants.ERROR, "用户账号已经被激活");
         }
 
-        user.setStatus(StatusEnum.ENABLE);
+        user.setStatus(EStatus.ENABLE);
         user.updateById();
         return ResultUtils.result(SystemConstants.SUCCESS, MessageConstants.OPERATION_SUCCESS);
     }

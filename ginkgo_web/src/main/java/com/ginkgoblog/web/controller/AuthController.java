@@ -6,7 +6,7 @@ import com.ginkgoblog.base.constants.MessageConstants;
 import com.ginkgoblog.base.constants.RedisConstants;
 import com.ginkgoblog.base.constants.SqlConstants;
 import com.ginkgoblog.base.constants.SystemConstants;
-import com.ginkgoblog.base.enums.StatusEnum;
+import com.ginkgoblog.base.enums.EStatus;
 import com.ginkgoblog.commons.entity.SysConfig;
 import com.ginkgoblog.commons.entity.User;
 import com.ginkgoblog.commons.service.SysConfigService;
@@ -66,7 +66,7 @@ public class AuthController {
         // 查询创建时间最新的一条系统配置
         QueryWrapper<SysConfig> queryWrapper = new QueryWrapper<>();
         queryWrapper.orderByDesc(SqlConstants.CREATE_TIME);
-        queryWrapper.eq(SqlConstants.STATUS, StatusEnum.ENABLE);
+        queryWrapper.eq(SqlConstants.STATUS, EStatus.ENABLE);
         queryWrapper.last("LIMIT 1");
         SysConfig SystemConfig = sysConfigService.getOne(queryWrapper);
         return ResultUtils.result(SystemConstants.SUCCESS, SystemConfig);

@@ -122,4 +122,8 @@ public class RedisConstants {
      * 标签点击
      */
     public static final String TAG_CLICK = "TAG_CLICK";
+
+    public final static String IP_SOURCE = "IP_SOURCE";
+    public final static String IP = "ip";
+    public final static String UTF_8 = "utf-8";
 }

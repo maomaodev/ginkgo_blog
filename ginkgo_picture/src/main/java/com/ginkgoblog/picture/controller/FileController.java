@@ -4,8 +4,8 @@ import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ginkgoblog.base.constants.SqlConstants;
 import com.ginkgoblog.base.constants.SystemConstants;
-import com.ginkgoblog.base.enums.OpenStatusEnum;
-import com.ginkgoblog.base.enums.StatusEnum;
+import com.ginkgoblog.base.enums.EOpenStatus;
+import com.ginkgoblog.base.enums.EStatus;
 import com.ginkgoblog.commons.vo.FileVO;
 import com.ginkgoblog.picture.entity.File;
 import com.ginkgoblog.picture.entity.FileSort;
@@ -22,8 +22,6 @@ import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
-import org.springframework.validation.BindingResult;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -372,7 +370,7 @@ public class FileController {
         QueryWrapper<FileSort> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(SqlConstants.SORT_NAME, sortName);
         queryWrapper.eq(SqlConstants.PROJECT_NAME, projectName);
-        queryWrapper.eq(SqlConstants.STATUS, StatusEnum.ENABLE);
+        queryWrapper.eq(SqlConstants.STATUS, EStatus.ENABLE);
         List<FileSort> fileSorts = fileSortService.list(queryWrapper);
 
         FileSort fileSort;
@@ -515,7 +513,7 @@ public class FileController {
                 // 设置七牛云图片
                 file.setQiNiuUrl(qiNiuPictureBaseUrl + qiNiuUrl);
 
-                file.setStatus(StatusEnum.ENABLE);
+                file.setStatus(EStatus.ENABLE);
                 file.setUserUid(userUid);
                 file.setAdminUid(adminUid);
                 fileService.save(file);
@@ -540,13 +538,13 @@ public class FileController {
         String qiNiuBucket = resultMap.get(SqlConstants.QI_NIU_BUCKET).toString();
         String qiNiuArea = resultMap.get(SqlConstants.QI_NIU_AREA).toString();
 
-        if (OpenStatusEnum.OPEN.equals(uploadQiNiu) && (StringUtils.isEmpty(qiNiuPictureBaseUrl)
+        if (EOpenStatus.OPEN.equals(uploadQiNiu) && (StringUtils.isEmpty(qiNiuPictureBaseUrl)
                 || StringUtils.isEmpty(qiNiuAccessKey) || StringUtils.isEmpty(qiNiuSecretKey)
                 || StringUtils.isEmpty(qiNiuBucket) || StringUtils.isEmpty(qiNiuArea))) {
             return ResultUtils.result(SystemConstants.ERROR, "请先配置七牛云");
         }
 
-        if (OpenStatusEnum.OPEN.equals(uploadLocal) && StringUtils.isEmpty(localPictureBaseUrl)) {
+        if (EOpenStatus.OPEN.equals(uploadLocal) && StringUtils.isEmpty(localPictureBaseUrl)) {
             return ResultUtils.result(SystemConstants.ERROR, "请先配置本地图片域名");
         }
 
@@ -578,7 +576,7 @@ public class FileController {
         QueryWrapper<FileSort> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq(SqlConstants.SORT_NAME, sortName);
         queryWrapper.eq(SqlConstants.PROJECT_NAME, projectName);
-        queryWrapper.eq(SqlConstants.STATUS, StatusEnum.ENABLE);
+        queryWrapper.eq(SqlConstants.STATUS, EStatus.ENABLE);
         List<FileSort> fileSorts = fileSortService.list(queryWrapper);
 
         FileSort fileSort;
@@ -714,7 +712,7 @@ public class FileController {
                 file.setPicUrl(picurl);
                 // 设置七牛云图片
                 file.setQiNiuUrl(qiNiuUrl);
-                file.setStatus(StatusEnum.ENABLE);
+                file.setStatus(EStatus.ENABLE);
                 file.setUserUid(userUid);
                 file.setAdminUid(adminUid);
                 fileService.save(file);

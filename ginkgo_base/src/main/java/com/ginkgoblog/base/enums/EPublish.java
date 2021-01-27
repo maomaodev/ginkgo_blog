@@ -6,7 +6,7 @@ package com.ginkgoblog.base.enums;
  * @author maomao
  * @date 2021-01-23
  */
-public class PublishEnum {
+public class EPublish {
     /**
      * 发布
      */

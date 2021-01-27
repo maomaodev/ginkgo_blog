@@ -1,7 +1,7 @@
 package com.ginkgoblog.web.log;
 
 import com.ginkgoblog.base.constants.SqlConstants;
-import com.ginkgoblog.base.enums.BehaviorEnum;
+import com.ginkgoblog.base.enums.EBehavior;
 import com.ginkgoblog.base.holder.RequestHolder;
 import com.ginkgoblog.base.utils.RequestUtil;
 import com.ginkgoblog.utils.AopUtils;
@@ -59,7 +59,7 @@ public class LogAspect {
         OperationLog annotation = currentMethod.getAnnotation(OperationLog.class);
 
         boolean save = annotation.save();
-        BehaviorEnum behavior = annotation.behavior();
+        EBehavior behavior = annotation.behavior();
         String operationName = AspectUtils.INSTANCE.parseParams(point.getArgs(), annotation.value());
         String ua = RequestUtil.getUa();
 
@@ -71,7 +71,7 @@ public class LogAspect {
 
         // 获取参数名称和值
         Map<String, Object> nameAndArgsMap = AopUtils.getFieldsName(point);
-        Map<String, String> result = BehaviorEnum.getModuleAndOtherData(behavior, nameAndArgsMap, operationName);
+        Map<String, String> result = EBehavior.getModuleAndOtherData(behavior, nameAndArgsMap, operationName);
 
         String userUid = "";
         if (request.getAttribute(SqlConstants.USER_UID) != null) {

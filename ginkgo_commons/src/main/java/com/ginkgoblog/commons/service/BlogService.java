@@ -1,6 +1,7 @@
 package com.ginkgoblog.commons.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ginkgoblog.commons.entity.Blog;
 
@@ -55,6 +56,50 @@ public interface BlogService extends IService<Blog> {
      * @return
      */
     IPage<Blog> searchBlogByTag(String tagUid, Long currentPage, Long pageSize);
+
+    /**
+     * 通过推荐等级获取博客Page，是否排序
+     *
+     * @param level
+     * @return
+     */
+    IPage<Blog> getBlogPageByLevel(Page<Blog> page, Integer level, Integer useSort);
+
+    /**
+     * 通过推荐等级获取博客Page
+     *
+     * @param level       推荐级别
+     * @param currentPage 当前页
+     * @param useSort     是否使用排序字段
+     * @return
+     */
+    IPage<Blog> getBlogPageByLevel(Integer level, Long currentPage, Integer useSort);
+
+    /**
+     * 获取首页排行博客
+     *
+     * @return
+     */
+    IPage<Blog> getHotBlog();
+
+
+    /**
+     * 获取最新的博客
+     *
+     * @param currentPage
+     * @param pageSize
+     * @return
+     */
+    IPage<Blog> getNewBlog(Long currentPage, Long pageSize);
+
+    /**
+     * 按时间戳获取博客
+     *
+     * @param currentPage
+     * @param pageSize
+     * @return
+     */
+    IPage<Blog> getBlogByTime(Long currentPage, Long pageSize);
 
     /**
      * 根据BlogUid获取相关的博客

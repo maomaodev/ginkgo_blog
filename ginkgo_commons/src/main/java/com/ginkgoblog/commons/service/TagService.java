@@ -1,5 +1,6 @@
 package com.ginkgoblog.commons.service;
 
+import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ginkgoblog.commons.entity.Tag;
 
@@ -19,4 +20,11 @@ public interface TagService extends IService<Tag> {
      * @return
      */
     List<Tag> getList();
+
+    /**
+     * 获取热门标签
+     *
+     * @return
+     */
+    IPage<Tag> getHotTag(Integer hotTagCount);
 }

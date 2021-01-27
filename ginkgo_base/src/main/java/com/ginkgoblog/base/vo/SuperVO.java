@@ -1,6 +1,7 @@
 package com.ginkgoblog.base.vo;
 
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 
 /**
  * 表现层对象父类
@@ -9,7 +10,8 @@ import lombok.Data;
  * @date 2021-01-18
  */
 @Data
-public class SuperVO {
+@EqualsAndHashCode(callSuper = true)
+public class SuperVO extends PageInfo {
     /**
      * 唯一uid
      */

@@ -2,7 +2,7 @@ package com.ginkgoblog.web.controller;
 
 import com.ginkgoblog.base.constants.SqlConstants;
 import com.ginkgoblog.base.constants.SystemConstants;
-import com.ginkgoblog.base.enums.BehaviorEnum;
+import com.ginkgoblog.base.enums.EBehavior;
 import com.ginkgoblog.commons.service.AdminService;
 import com.ginkgoblog.commons.service.WebConfigService;
 import com.ginkgoblog.utils.ResultUtils;
@@ -32,7 +32,7 @@ public class AboutMeController {
     @Autowired
     private WebConfigService webConfigService;
 
-    @OperationLog(value = "关于我", behavior = BehaviorEnum.VISIT_PAGE)
+    @OperationLog(value = "关于我", behavior = EBehavior.VISIT_PAGE)
     @ApiOperation("关于我")
     @GetMapping("/getMe")
     public String getMe() {
