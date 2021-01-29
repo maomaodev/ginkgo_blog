@@ -24,7 +24,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
         "com.ginkgoblog.web.utils",
         "com.ginkgoblog.commons.config",
         "com.ginkgoblog.commons.service",
-        "com.ginkgoblog.commons.utils"
+        "com.ginkgoblog.commons.utils",
+        "com.ginkgoblog.utils"
 })
 public class WebApplication {
     public static void main(String[] args) {

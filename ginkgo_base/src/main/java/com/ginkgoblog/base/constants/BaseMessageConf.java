@@ -1,12 +1,12 @@
 package com.ginkgoblog.base.constants;
 
 /**
- * 消息相关常量
+ * 消息通知
  *
  * @author maomao
- * @date 2021-01-19
+ * @date 2021-01-27
  */
-public class MessageConstants {
+public class BaseMessageConf {
     public static final String OPERATION_SUCCESS = "操作成功";
     public static final String OPERATION_FAIL = "操作失败";
     public static final String INSERT_SUCCESS = "插入成功";
@@ -42,21 +42,21 @@ public class MessageConstants {
     public static final String CHILDREN_MENU_UNDER_THIS_MENU = "该菜单下还有子菜单！";
     public static final String THIS_SORT_IS_TOP = "该分类已经在顶端！";
     public static final String THIS_TAG_IS_TOP = "该标签已经在顶端！";
-    public static final String INVALID_TOKEN = "token令牌未被识别";
-    public static final String ERROR_PASSWORD = "密码错误";
-    public static final String YOU_HAVE_BEEN_PRISE = "您已经点赞过了!";
-    public static final String PLEASE_LOGIN_TO_PRISE = "请先登录后才能点赞!";
-    public static final String The_PICTURE_SORT_DOES_NOT_EXIST = "该图片分类不存在";
-    public static final String The_PICTURE_DOES_NOT_EXIST = "该图片不存在";
+    public final static String INVALID_TOKEN = "token令牌未被识别";
+    public final static String ERROR_PASSWORD = "密码错误";
+    public final static String YOU_HAVE_BEEN_PRISE = "您已经点赞过了!";
+    public final static String PLEASE_LOGIN_TO_PRISE = "请先登录后才能点赞!";
+    public final static String The_PICTURE_SORT_DOES_NOT_EXIST = "该图片分类不存在";
+    public final static String The_PICTURE_DOES_NOT_EXIST = "该图片不存在";
 
-    public static final String PICTURE_MUST_BE_SELECT_AREA = "图片必须选择上传到一个区域";
-    public static final String MUST_BE_OPEN_LOCAL_UPLOAD = "图片显示优先级为本地优先，必须开启图片上传本地";
-    public static final String MUST_BE_OPEN_QI_NIU_UPLOAD = "图片显示优先级为七牛云优先，必须开启图片上传七牛云";
+    public final static String PICTURE_MUST_BE_SELECT_AREA = "图片必须选择上传到一个区域";
+    public final static String MUST_BE_OPEN_LOCAL_UPLOAD = "图片显示优先级为本地优先，必须开启图片上传本地";
+    public final static String MUST_BE_OPEN_QI_NIU_UPLOAD = "图片显示优先级为七牛云优先，必须开启图片上传七牛云";
 
-    public static final String MUST_BE_SET_EMAIL = "开启邮件通知，必须设置邮箱地址";
+    public final static String MUST_BE_SET_EMAIL = "开启邮件通知，必须设置邮箱地址";
     public static final String DATA_NO_PRIVILEGE = "该数据无权限访问";
     public static final String CANNOT_CHANGE_THE_PASSWORD_BY_USER = "第三方登录的用户无法修改密码";
     public static final String RESTAPI_NO_PRIVILEGE = "您无权进行该操作";
     public static final String ACCESS_NO_PRIVILEGE = "该资源无权限访问";
-
+    public static final String LOGIN_TIMEOUT = "您已退出，请重新登录";
 }

@@ -1,12 +1,12 @@
 package com.ginkgoblog.web.log;
 
-import com.ginkgoblog.base.constants.SqlConstants;
 import com.ginkgoblog.base.enums.EBehavior;
 import com.ginkgoblog.base.holder.RequestHolder;
 import com.ginkgoblog.base.utils.RequestUtil;
 import com.ginkgoblog.utils.AopUtils;
-import com.ginkgoblog.utils.AspectUtils;
+import com.ginkgoblog.utils.AspectUtil;
 import com.ginkgoblog.utils.IpUtils;
+import com.ginkgoblog.web.constants.SysConf;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
@@ -28,22 +28,24 @@ import java.util.Map;
 @Aspect
 @Component("WebLoggerAspect")
 @Slf4j
-public class LogAspect {
+public class LoggerAspect {
     @Autowired
     private SysLogHandle sysLogHandle;
 
-    @Pointcut(value = "@annotation(operationLog)")
-    public void pointcut(OperationLog operationLog) {
+    @Pointcut(value = "@annotation(bussinessLog)")
+    public void pointcut(BussinessLog bussinessLog) {
     }
 
-    @Around(value = "pointcut(operationLog)")
-    public Object doAround(ProceedingJoinPoint joinPoint, OperationLog operationLog) throws Throwable {
+    @Around(value = "pointcut(bussinessLog)")
+    public Object doAround(ProceedingJoinPoint joinPoint, BussinessLog bussinessLog) throws Throwable {
+
         //先执行业务
         Object result = joinPoint.proceed();
 
         try {
             // 日志收集
             handle(joinPoint);
+
         } catch (Exception e) {
             log.error("日志记录出错!", e);
         }
@@ -54,32 +56,34 @@ public class LogAspect {
     private void handle(ProceedingJoinPoint point) throws Exception {
 
         HttpServletRequest request = RequestHolder.getRequest();
-        Method currentMethod = AspectUtils.INSTANCE.getMethod(point);
+
+        Method currentMethod = AspectUtil.INSTANCE.getMethod(point);
         //获取操作名称
-        OperationLog annotation = currentMethod.getAnnotation(OperationLog.class);
+        BussinessLog annotation = currentMethod.getAnnotation(BussinessLog.class);
 
         boolean save = annotation.save();
+
         EBehavior behavior = annotation.behavior();
-        String operationName = AspectUtils.INSTANCE.parseParams(point.getArgs(), annotation.value());
+
+        String bussinessName = AspectUtil.INSTANCE.parseParams(point.getArgs(), annotation.value());
+
         String ua = RequestUtil.getUa();
 
-        log.info("{} | {} - {} {} - {}", operationName, IpUtils.getIpAddr(request),
-                RequestUtil.getMethod(), RequestUtil.getRequestUrl(), ua);
+        log.info("{} | {} - {} {} - {}", bussinessName, IpUtils.getIpAddr(request), RequestUtil.getMethod(), RequestUtil.getRequestUrl(), ua);
         if (!save) {
             return;
         }
 
         // 获取参数名称和值
         Map<String, Object> nameAndArgsMap = AopUtils.getFieldsName(point);
-        Map<String, String> result = EBehavior.getModuleAndOtherData(behavior, nameAndArgsMap, operationName);
-
+        Map<String, String> result = EBehavior.getModuleAndOtherData(behavior, nameAndArgsMap, bussinessName);
         String userUid = "";
-        if (request.getAttribute(SqlConstants.USER_UID) != null) {
-            userUid = request.getAttribute(SqlConstants.USER_UID).toString();
+        if (request.getAttribute(SysConf.USER_UID) != null) {
+            userUid = request.getAttribute(SysConf.USER_UID).toString();
         }
+
         // 异步存储日志
-        sysLogHandle.setSysLogHandle(userUid, behavior.getBehavior(),
-                result.get(SqlConstants.MODULE_UID), result.get(SqlConstants.OTHER_DATA));
+        sysLogHandle.setSysLogHandle(userUid, behavior.getBehavior(), result.get(SysConf.MODULE_UID), result.get(SysConf.OTHER_DATA));
         sysLogHandle.onRun();
     }
 }

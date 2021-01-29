@@ -17,7 +17,7 @@ import java.util.List;
 @Data
 @EqualsAndHashCode(callSuper = true)
 @TableName("t_category_menu")
-public class CategoryMenu extends SuperEntity {
+public class CategoryMenu extends SuperEntity implements Comparable<CategoryMenu>{
     /**
      * 菜单名称
      */
@@ -76,4 +76,13 @@ public class CategoryMenu extends SuperEntity {
      */
     @TableField(exist = false)
     private List<CategoryMenu> childCategoryMenu;
+
+    @Override
+    public int compareTo(CategoryMenu o) {
+
+        if (this.sort >= o.getSort()) {
+            return -1;
+        }
+        return 1;
+    }
 }

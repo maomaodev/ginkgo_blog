@@ -1,20 +1,19 @@
 package com.ginkgoblog.picture.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.ginkgoblog.base.constants.SqlConstants;
-import com.ginkgoblog.base.constants.SystemConstants;
 import com.ginkgoblog.base.enums.EOpenStatus;
 import com.ginkgoblog.base.enums.EStatus;
 import com.ginkgoblog.commons.vo.FileVO;
-import com.ginkgoblog.picture.entity.File;
+import com.ginkgoblog.picture.constants.SQLConf;
+import com.ginkgoblog.picture.constants.SysConf;
 import com.ginkgoblog.picture.entity.FileSort;
 import com.ginkgoblog.picture.service.FileService;
 import com.ginkgoblog.picture.service.FileSortService;
 import com.ginkgoblog.picture.utils.FeignUtil;
 import com.ginkgoblog.picture.utils.QiniuUtil;
 import com.ginkgoblog.utils.DateUtils;
-import com.ginkgoblog.utils.ResultUtils;
+import com.ginkgoblog.utils.JsonUtils;
+import com.ginkgoblog.utils.ResultUtil;
 import com.ginkgoblog.utils.StringUtils;
 import io.swagger.annotations.*;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +21,8 @@ import org.apache.http.entity.ContentType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -52,22 +53,22 @@ public class FileController {
     @Value(value = "${file.upload.path}")
     private String path;
 
-    @ApiOperation("截图上传")
-    @PostMapping("/cropperPicture")
-    public String cropperPicture(@RequestParam("file") MultipartFile file,
-                                 HttpServletRequest request,
-                                 HttpServletResponse response) throws IOException {
+    @ApiOperation(value = "截图上传", notes = "截图上传")
+    @RequestMapping(value = "/cropperPicture", method = RequestMethod.POST)
+    public String cropperPicture(@RequestParam("file") MultipartFile file, HttpServletRequest request, HttpServletResponse response) throws IOException {
 
         List<MultipartFile> filedatas = new ArrayList<>();
+
         filedatas.add(file);
 
-        String platform = request.getParameter(SqlConstants.PLATFORM);
-        String token = request.getParameter(SqlConstants.TOKEN);
+        String platform = request.getParameter(SysConf.PLATFORM);
+        String token = request.getParameter(SysConf.TOKEN);
 
         // 获取七牛云配置文件
-        Map<String, String> qiNiuResultMap = new HashMap<>();
+        Map<String, String> qiNiuResultMap;
+
         // 判断是否是web端发送过来的请求
-        if (SqlConstants.WEB.equals(platform)) {
+        if (SysConf.WEB.equals(platform)) {
             // 如果是调用web端获取配置的接口
             qiNiuResultMap = feignUtil.getQiNiuConfigByWebToken(token);
         } else {
@@ -78,141 +79,168 @@ public class FileController {
         // 七牛云配置
         Map<String, String> qiNiuConfig = new HashMap<>();
 
-        String uploadQiNiu = qiNiuResultMap.get("uploadQiNiu");
-        String uploadLocal = qiNiuResultMap.get("uploadLocal");
-        String localPictureBaseUrl = qiNiuResultMap.get("localPictureBaseUrl");
-        String qiNiuPictureBaseUrl = qiNiuResultMap.get("qiNiuPictureBaseUrl");
+        String uploadQiNiu = "";
+        String uploadLocal = "";
+        String localPictureBaseUrl = "";
+        String qiNiuPictureBaseUrl = "";
 
-        String qiNiuAccessKey = qiNiuResultMap.get("qiNiuAccessKey");
-        String qiNiuSecretKey = qiNiuResultMap.get("qiNiuSecretKey");
-        String qiNiuBucket = qiNiuResultMap.get("qiNiuBucket");
-        String qiNiuArea = qiNiuResultMap.get("qiNiuArea");
-        String picturePriority = qiNiuResultMap.get("picturePriority");
+        String qiNiuAccessKey = "";
+        String qiNiuSecretKey = "";
+        String qiNiuBucket = "";
+        String qiNiuArea = "";
+        String picturePriority = "";
 
-        if ("1".equals(uploadQiNiu) && (StringUtils.isEmpty(qiNiuPictureBaseUrl) || StringUtils.isEmpty(qiNiuAccessKey)
-                || StringUtils.isEmpty(qiNiuSecretKey) || StringUtils.isEmpty(qiNiuBucket) || StringUtils.isEmpty(qiNiuArea))) {
-            return ResultUtils.result(SystemConstants.ERROR, "请先配置七牛云");
+        if (qiNiuConfig == null) {
+            return ResultUtil.result(SysConf.ERROR, "请先配置七牛云");
+        } else {
+
+            uploadQiNiu = qiNiuResultMap.get("uploadQiNiu");
+            uploadLocal = qiNiuResultMap.get("uploadLocal");
+            localPictureBaseUrl = qiNiuResultMap.get("localPictureBaseUrl");
+            qiNiuPictureBaseUrl = qiNiuResultMap.get("qiNiuPictureBaseUrl");
+
+            qiNiuAccessKey = qiNiuResultMap.get("qiNiuAccessKey");
+            qiNiuSecretKey = qiNiuResultMap.get("qiNiuSecretKey");
+            qiNiuBucket = qiNiuResultMap.get("qiNiuBucket");
+            qiNiuArea = qiNiuResultMap.get("qiNiuArea");
+            picturePriority = qiNiuResultMap.get("picturePriority");
+
+            if ("1".equals(uploadQiNiu) && (StringUtils.isEmpty(qiNiuPictureBaseUrl) || StringUtils.isEmpty(qiNiuAccessKey)
+                    || StringUtils.isEmpty(qiNiuSecretKey) || StringUtils.isEmpty(qiNiuBucket) || StringUtils.isEmpty(qiNiuArea))) {
+                return ResultUtil.result(SysConf.ERROR, "请先配置七牛云");
+            }
+
+            if ("1".equals(uploadLocal) && StringUtils.isEmpty(localPictureBaseUrl)) {
+                return ResultUtil.result(SysConf.ERROR, "请先配置本地图片域名");
+            }
+
+            qiNiuConfig.put("qiNiuAccessKey", qiNiuAccessKey);
+            qiNiuConfig.put("qiNiuSecretKey", qiNiuSecretKey);
+            qiNiuConfig.put("qiNiuBucket", qiNiuBucket);
+            qiNiuConfig.put("qiNiuArea", qiNiuArea);
+            qiNiuConfig.put("uploadQiNiu", uploadQiNiu);
+            qiNiuConfig.put("uploadLocal", uploadLocal);
         }
 
-        if ("1".equals(uploadLocal) && StringUtils.isEmpty(localPictureBaseUrl)) {
-            return ResultUtils.result(SystemConstants.ERROR, "请先配置本地图片域名");
-        }
-
-        qiNiuConfig.put("qiNiuAccessKey", qiNiuAccessKey);
-        qiNiuConfig.put("qiNiuSecretKey", qiNiuSecretKey);
-        qiNiuConfig.put("qiNiuBucket", qiNiuBucket);
-        qiNiuConfig.put("qiNiuArea", qiNiuArea);
-        qiNiuConfig.put("uploadQiNiu", uploadQiNiu);
-        qiNiuConfig.put("uploadLocal", uploadLocal);
-
-        // 多文件上传后，返回文件的数据库相关信息
         String result = fileService.uploadImages(path, request, filedatas, qiNiuConfig);
-        // 返回的数据，包含每张图片的UID和URL
+
         List<Map<String, Object>> listMap = new ArrayList<>();
-        Map<String, Object> picMap = (Map<String, Object>) JSON.parse(result);
-        if (SystemConstants.SUCCESS.equals(picMap.get(SystemConstants.CODE))) {
+        Map<String, Object> picMap = (Map<String, Object>) JsonUtils.jsonToObject(result, Map.class);
+        if (SysConf.SUCCESS.equals(picMap.get(SysConf.CODE))) {
             List<Map<String, Object>> picData = (List<Map<String, Object>>) picMap.get("data");
             if (picData.size() > 0) {
-                for (Map<String, Object> picDatum : picData) {
+                for (int i = 0; i < picData.size(); i++) {
                     Map<String, Object> item = new HashMap<>();
-                    // 设置图片的UID
-                    item.put(SqlConstants.UID, picDatum.get(SqlConstants.UID));
-                    // 设置图片的URL（七牛云或本地）
+
+                    item.put(SysConf.UID, picData.get(i).get(SysConf.UID));
+
                     if ("1".equals(picturePriority)) {
-                        item.put(SqlConstants.URL, qiNiuPictureBaseUrl + picDatum.get(SqlConstants.QI_NIU_URL));
+                        item.put(SysConf.URL, qiNiuPictureBaseUrl + picData.get(i).get(SysConf.QI_NIU_URL));
                     } else {
-                        item.put(SqlConstants.URL, localPictureBaseUrl + picDatum.get(SqlConstants.PIC_URL));
+                        item.put(SysConf.URL, localPictureBaseUrl + picData.get(i).get(SysConf.PIC_URL));
                     }
                     listMap.add(item);
                 }
             }
         }
 
-        return ResultUtils.result(SystemConstants.SUCCESS, listMap);
+        return ResultUtil.result(SysConf.SUCCESS, listMap);
     }
+
 
     /**
      * 获取文件的信息接口
+     * fileIds 获取文件信息的ids
+     * code ids用什么分割的，默认“,”
      *
-     * @param fileIds 获取文件信息的ids
-     * @param code    ids用什么分割的，默认“,”
-     * @return 处理结果
+     * @return
      */
-    @ApiOperation("通过fileIds获取图片信息接口")
+
+    @ApiOperation(value = "通过fileIds获取图片信息接口", notes = "获取图片信息接口")
     @GetMapping("/getPicture")
     public String getPicture(
-            @ApiParam(name = "fileIds", value = "文件ids") @RequestParam(name = "fileIds", required = false) String fileIds,
-            @ApiParam(name = "code", value = "切割符") @RequestParam(name = "code", required = false) String code) {
+            @ApiParam(name = "fileIds", value = "文件ids", required = false) @RequestParam(name = "fileIds", required = false) String fileIds,
+            @ApiParam(name = "code", value = "切割符", required = false) @RequestParam(name = "code", required = false) String code) {
 
         if (StringUtils.isEmpty(code)) {
             code = ",";
         }
         if (StringUtils.isEmpty(fileIds)) {
-            return ResultUtils.result(SystemConstants.ERROR, "数据错误");
+            return ResultUtil.result(SysConf.ERROR, "数据错误");
         } else {
             List<Map<String, Object>> list = new ArrayList<>();
-            List<String> uids = StringUtils.changeStringToString(fileIds, code);
-            QueryWrapper<File> queryWrapper = new QueryWrapper<>();
-            queryWrapper.in(SqlConstants.UID, uids);
-            List<File> fileList = fileService.list(queryWrapper);
-
+            List<String> changeStringToString = StringUtils.changeStringToString(fileIds, code);
+            QueryWrapper<com.ginkgoblog.picture.entity.File> queryWrapper = new QueryWrapper<>();
+            queryWrapper.in(SQLConf.UID, changeStringToString);
+            List<com.ginkgoblog.picture.entity.File> fileList = fileService.list(queryWrapper);
             if (fileList.size() > 0) {
-                for (File file : fileList) {
-                    Map<String, Object> map = new HashMap<>();
+                for (com.ginkgoblog.picture.entity.File file : fileList) {
+                    if (file != null) {
+                        Map<String, Object> remap = new HashMap<>();
 
-                    // 获取七牛云地址
-                    map.put(SqlConstants.QI_NIU_URL, file.getQiNiuUrl());
-                    // 获取本地地址
-                    map.put(SqlConstants.URL, file.getPicUrl());
-                    // 后缀名，也就是类型
-                    map.put(SqlConstants.EXPANDED_NAME, file.getPicExpandedName());
-                    // 原文件名
-                    map.put(SqlConstants.FILE_OLD_NAME, file.getFileOldName());
-                    map.put("file_old_name", file.getFileOldName());
-                    // 现文件名和id
-                    map.put(SqlConstants.NAME, file.getPicName());
-                    map.put(SqlConstants.UID, file.getUid());
+                        // 获取七牛云地址
+                        remap.put(SysConf.QI_NIU_URL, file.getQiNiuUrl());
 
-                    list.add(map);
+                        // 获取本地地址
+                        remap.put(SysConf.URL, file.getPicUrl());
+
+                        // 后缀名，也就是类型
+                        remap.put(SysConf.EXPANDED_NAME, file.getPicExpandedName());
+
+                        remap.put(SysConf.FILE_OLD_NAME, file.getFileOldName());
+
+                        //名称
+                        remap.put(SysConf.NAME, file.getPicName());
+                        remap.put(SysConf.UID, file.getUid());
+                        remap.put("file_old_name", file.getFileOldName());
+                        list.add(remap);
+                    }
                 }
             }
-
-            return ResultUtils.result(SystemConstants.SUCCESS, list);
+            return ResultUtil.result(SysConf.SUCCESS, list);
         }
     }
 
+
     /**
      * 文件下载
+     * fileId ，
+     * fileName  可以不写，不写下载的文件名就是上传的文件名
      *
      * @param request
      * @param response
-     * @return
      */
-    @ApiOperation("图片下载接口")
+    @ApiOperation(value = "图片下载接口", notes = "图片下载接口")
     @ApiImplicitParams({
-            @ApiImplicitParam(name = "fileIds", value = "fileIds", dataType = "String")
+            @ApiImplicitParam(name = "fileIds", value = "fileIds", required = false, dataType = "String")
     })
     @GetMapping("downloadFile")
-    public String downloadFile(HttpServletRequest request, HttpServletResponse response) {
+    public Object downloadFile(HttpServletRequest request, HttpServletResponse response) {
 
         String fileId = request.getParameter("fileId");
+
         if (StringUtils.isEmpty(fileId)) {
-            File oneById = fileService.getById(fileId);
+
+            com.ginkgoblog.picture.entity.File oneById = fileService.getById(fileId);
             if (oneById != null) {
+                //aim_test//文件名,不传就用默认的，或者是oldName
                 String fileName = request.getParameter("fileName");
-                // 为空则使用之前的文件名
+
                 if (StringUtils.isEmpty(fileName)) {
+                    //以前的名字
                     fileName = oneById.getFileOldName();
                 }
 
                 String fileRealPath = path + oneById.getPicUrl();
+
                 java.io.File file = new java.io.File(fileRealPath);
-                // 设置强制下载不打开
+
+                //设置强制下载不打开
                 response.setContentType("application/force-download");
+
                 // 设置文件名
                 response.addHeader("Content-Disposition", "attachment;fileName=" + fileName);
 
-                // 文件下载，还可以直接使用common-io库的FileUtils工具类直接下载
                 byte[] buffer = new byte[1024];
                 FileInputStream fis = null;
                 BufferedInputStream bis = null;
@@ -226,11 +254,11 @@ public class FileController {
                         i = bis.read(buffer);
                     }
                     log.info("文件下载成功 realUrl:   " + fileRealPath);
-                    return ResultUtils.result(SystemConstants.SUCCESS, null);
+                    return ResultUtil.result(SysConf.SUCCESS, null);
                 } catch (Exception e) {
                     e.printStackTrace();
                     log.info("============文件下载出现异常==========");
-                    return ResultUtils.result(SystemConstants.ERROR, "文件下载出现异常");
+                    return ResultUtil.result(SysConf.ERROR, "文件下载出现异常");
                 } finally {
                     if (bis != null) {
                         try {
@@ -249,65 +277,35 @@ public class FileController {
                 }
             }
         }
-
         log.info("文件下载失败fileId=   " + fileId);
-        return ResultUtils.result(SystemConstants.ERROR, "参数错误");
+        return ResultUtil.result(SysConf.ERROR, "参数错误");
     }
 
-    @ApiOperation("多图片上传接口")
+
+    /**
+     * 多文件上传
+     * 上传图片接口   传入 userId sysUserId ,有那个传哪个，记录是谁传的,
+     * projectName 传入的项目名称如 base 默认是base
+     * sortName 传入的模块名， 如 admin，user ,等，不在数据库中记录的是不会上传的
+     *
+     * @return
+     */
+    @ApiOperation(value = "多图片上传接口", notes = "多图片上传接口")
     @ApiImplicitParams({
             @ApiImplicitParam(name = "filedatas", value = "文件数据", required = true),
-            @ApiImplicitParam(name = "userUid", value = "用户UID", dataType = "String"),
-            @ApiImplicitParam(name = "sysUserId", value = "管理员UID", dataType = "String"),
-            @ApiImplicitParam(name = "projectName", value = "项目名", dataType = "String"),
-            @ApiImplicitParam(name = "sortName", value = "模块名", dataType = "String")
+            @ApiImplicitParam(name = "userUid", value = "用户UID", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "sysUserId", value = "管理员UID", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "projectName", value = "项目名", required = false, dataType = "String"),
+            @ApiImplicitParam(name = "sortName", value = "模块名", required = false, dataType = "String")
     })
     @PostMapping("/pictures")
-    public synchronized String uploadPics(HttpServletRequest request, List<MultipartFile> filedatas) {
+    public synchronized Object uploadPics(HttpServletRequest request, List<MultipartFile> filedatas) {
 
-        String token = request.getParameter(SqlConstants.TOKEN);
-        // 获取七牛云配置
-        Map<String, String> qiNiuResultMap = feignUtil.getQiNiuConfig(token);
-        // 七牛云配置
-        Map<String, String> qiNiuConfig = new HashMap<>();
+        String token = request.getParameter(SysConf.TOKEN);
 
-        String uploadQiNiu = qiNiuResultMap.get("uploadQiNiu");
-        String uploadLocal = qiNiuResultMap.get("uploadLocal");
-        String localPictureBaseUrl = qiNiuResultMap.get("localPictureBaseUrl");
-        String qiNiuPictureBaseUrl = qiNiuResultMap.get("qiNiuPictureBaseUrl");
-
-        String qiNiuAccessKey = qiNiuResultMap.get("qiNiuAccessKey");
-        String qiNiuSecretKey = qiNiuResultMap.get("qiNiuSecretKey");
-        String qiNiuBucket = qiNiuResultMap.get("qiNiuBucket");
-        String qiNiuArea = qiNiuResultMap.get("qiNiuArea");
-        String picturePriority = qiNiuResultMap.get("picturePriority");
-
-        if ("1".equals(uploadQiNiu) && (StringUtils.isEmpty(qiNiuPictureBaseUrl) || StringUtils.isEmpty(qiNiuAccessKey)
-                || StringUtils.isEmpty(qiNiuSecretKey) || StringUtils.isEmpty(qiNiuBucket) || StringUtils.isEmpty(qiNiuArea))) {
-            return ResultUtils.result(SystemConstants.ERROR, "请先配置七牛云");
-        }
-
-        if ("1".equals(uploadLocal) && StringUtils.isEmpty(localPictureBaseUrl)) {
-            return ResultUtils.result(SystemConstants.ERROR, "请先配置本地图片域名");
-        }
-
-        qiNiuConfig.put("qiNiuAccessKey", qiNiuAccessKey);
-        qiNiuConfig.put("qiNiuSecretKey", qiNiuSecretKey);
-        qiNiuConfig.put("qiNiuBucket", qiNiuBucket);
-        qiNiuConfig.put("qiNiuArea", qiNiuArea);
-        qiNiuConfig.put("uploadQiNiu", uploadQiNiu);
-        qiNiuConfig.put("uploadLocal", uploadLocal);
-
-        return fileService.uploadImages(path, request, filedatas, qiNiuConfig);
-    }
-
-    @ApiOperation(value = "通过URL上传图片", notes = "通过URL上传图片")
-    @PostMapping("/uploadPicsByUrl")
-    public synchronized Object uploadPicsByUrl(HttpServletRequest request, @RequestBody FileVO fileVO) {
-
-        String token = request.getParameter(SqlConstants.TOKEN);
         // 获取七牛云配置文件
         Map<String, String> qiNiuResultMap = feignUtil.getQiNiuConfig(token);
+
         // 七牛云配置
         Map<String, String> qiNiuConfig = new HashMap<>();
 
@@ -322,32 +320,102 @@ public class FileController {
         String qiNiuArea = "";
         String picturePriority = "";
 
-        uploadQiNiu = qiNiuResultMap.get("uploadQiNiu");
-        uploadLocal = qiNiuResultMap.get("uploadLocal");
-        localPictureBaseUrl = qiNiuResultMap.get("localPictureBaseUrl");
-        qiNiuPictureBaseUrl = qiNiuResultMap.get("qiNiuPictureBaseUrl");
+        if (qiNiuConfig == null) {
+            return ResultUtil.result(SysConf.ERROR, "请先配置七牛云");
+        } else {
 
-        qiNiuAccessKey = qiNiuResultMap.get("qiNiuAccessKey");
-        qiNiuSecretKey = qiNiuResultMap.get("qiNiuSecretKey");
-        qiNiuBucket = qiNiuResultMap.get("qiNiuBucket");
-        qiNiuArea = qiNiuResultMap.get("qiNiuArea");
-        picturePriority = qiNiuResultMap.get("picturePriority");
+            uploadQiNiu = qiNiuResultMap.get("uploadQiNiu");
+            uploadLocal = qiNiuResultMap.get("uploadLocal");
+            localPictureBaseUrl = qiNiuResultMap.get("localPictureBaseUrl");
+            qiNiuPictureBaseUrl = qiNiuResultMap.get("qiNiuPictureBaseUrl");
 
-        if ("1".equals(uploadQiNiu) && (StringUtils.isEmpty(qiNiuPictureBaseUrl) || StringUtils.isEmpty(qiNiuAccessKey)
-                || StringUtils.isEmpty(qiNiuSecretKey) || StringUtils.isEmpty(qiNiuBucket) || StringUtils.isEmpty(qiNiuArea))) {
-            return ResultUtils.result(SystemConstants.ERROR, "请先配置七牛云");
+            qiNiuAccessKey = qiNiuResultMap.get("qiNiuAccessKey");
+            qiNiuSecretKey = qiNiuResultMap.get("qiNiuSecretKey");
+            qiNiuBucket = qiNiuResultMap.get("qiNiuBucket");
+            qiNiuArea = qiNiuResultMap.get("qiNiuArea");
+            picturePriority = qiNiuResultMap.get("picturePriority");
+
+            if ("1".equals(uploadQiNiu) && (StringUtils.isEmpty(qiNiuPictureBaseUrl) || StringUtils.isEmpty(qiNiuAccessKey)
+                    || StringUtils.isEmpty(qiNiuSecretKey) || StringUtils.isEmpty(qiNiuBucket) || StringUtils.isEmpty(qiNiuArea))) {
+                return ResultUtil.result(SysConf.ERROR, "请先配置七牛云");
+            }
+
+            if ("1".equals(uploadLocal) && StringUtils.isEmpty(localPictureBaseUrl)) {
+                return ResultUtil.result(SysConf.ERROR, "请先配置本地图片域名");
+            }
+
+            qiNiuConfig.put("qiNiuAccessKey", qiNiuAccessKey);
+            qiNiuConfig.put("qiNiuSecretKey", qiNiuSecretKey);
+            qiNiuConfig.put("qiNiuBucket", qiNiuBucket);
+            qiNiuConfig.put("qiNiuArea", qiNiuArea);
+            qiNiuConfig.put("uploadQiNiu", uploadQiNiu);
+            qiNiuConfig.put("uploadLocal", uploadLocal);
         }
 
-        if ("1".equals(uploadLocal) && StringUtils.isEmpty(localPictureBaseUrl)) {
-            return ResultUtils.result(SystemConstants.ERROR, "请先配置本地图片域名");
-        }
+        return fileService.uploadImages(path, request, filedatas, qiNiuConfig);
+    }
 
-        qiNiuConfig.put("qiNiuAccessKey", qiNiuAccessKey);
-        qiNiuConfig.put("qiNiuSecretKey", qiNiuSecretKey);
-        qiNiuConfig.put("qiNiuBucket", qiNiuBucket);
-        qiNiuConfig.put("qiNiuArea", qiNiuArea);
-        qiNiuConfig.put("uploadQiNiu", uploadQiNiu);
-        qiNiuConfig.put("uploadLocal", uploadLocal);
+    /**
+     * 通过URL将图片上传到自己服务器中
+     *
+     * @param fileVO
+     * @param result
+     * @return
+     */
+    @ApiOperation(value = "通过URL上传图片", notes = "通过URL上传图片")
+    @PostMapping("/uploadPicsByUrl")
+    public synchronized Object uploadPicsByUrl(HttpServletRequest request, @RequestBody FileVO fileVO, BindingResult result) {
+
+        String token = request.getParameter(SysConf.TOKEN);
+
+        // 获取七牛云配置文件
+        Map<String, String> qiNiuResultMap = feignUtil.getQiNiuConfig(token);
+
+        // 七牛云配置
+        Map<String, String> qiNiuConfig = new HashMap<>();
+
+        String uploadQiNiu = "";
+        String uploadLocal = "";
+        String localPictureBaseUrl = "";
+        String qiNiuPictureBaseUrl = "";
+
+        String qiNiuAccessKey = "";
+        String qiNiuSecretKey = "";
+        String qiNiuBucket = "";
+        String qiNiuArea = "";
+        String picturePriority = "";
+
+        if (qiNiuConfig == null) {
+            return ResultUtil.result(SysConf.ERROR, "请先配置七牛云");
+        } else {
+
+            uploadQiNiu = qiNiuResultMap.get("uploadQiNiu");
+            uploadLocal = qiNiuResultMap.get("uploadLocal");
+            localPictureBaseUrl = qiNiuResultMap.get("localPictureBaseUrl");
+            qiNiuPictureBaseUrl = qiNiuResultMap.get("qiNiuPictureBaseUrl");
+
+            qiNiuAccessKey = qiNiuResultMap.get("qiNiuAccessKey");
+            qiNiuSecretKey = qiNiuResultMap.get("qiNiuSecretKey");
+            qiNiuBucket = qiNiuResultMap.get("qiNiuBucket");
+            qiNiuArea = qiNiuResultMap.get("qiNiuArea");
+            picturePriority = qiNiuResultMap.get("picturePriority");
+
+            if ("1".equals(uploadQiNiu) && (StringUtils.isEmpty(qiNiuPictureBaseUrl) || StringUtils.isEmpty(qiNiuAccessKey)
+                    || StringUtils.isEmpty(qiNiuSecretKey) || StringUtils.isEmpty(qiNiuBucket) || StringUtils.isEmpty(qiNiuArea))) {
+                return ResultUtil.result(SysConf.ERROR, "请先配置七牛云");
+            }
+
+            if ("1".equals(uploadLocal) && StringUtils.isEmpty(localPictureBaseUrl)) {
+                return ResultUtil.result(SysConf.ERROR, "请先配置本地图片域名");
+            }
+
+            qiNiuConfig.put("qiNiuAccessKey", qiNiuAccessKey);
+            qiNiuConfig.put("qiNiuSecretKey", qiNiuSecretKey);
+            qiNiuConfig.put("qiNiuBucket", qiNiuBucket);
+            qiNiuConfig.put("qiNiuArea", qiNiuArea);
+            qiNiuConfig.put("uploadQiNiu", uploadQiNiu);
+            qiNiuConfig.put("uploadLocal", uploadLocal);
+        }
 
         String userUid = fileVO.getUserUid();
         String adminUid = fileVO.getAdminUid();
@@ -355,30 +423,34 @@ public class FileController {
         String sortName = fileVO.getSortName();
         List<String> urlList = fileVO.getUrlList();
 
-        // projectName现在默认base
+        //projectName现在默认base
         if (StringUtils.isEmpty(projectName)) {
             projectName = "base";
         }
 
-        // 这里可以检测用户上传，如果不是网站的用户或会员就不能调用
+        //这里可以检测用户上传，如果不是网站的用户或会员就不能调用
         if (StringUtils.isEmpty(userUid) && StringUtils.isEmpty(adminUid)) {
-            return ResultUtils.result(SystemConstants.ERROR, "请先注册");
+            return ResultUtil.result(SysConf.ERROR, "请先注册");
+        } else {
+
         }
 
         log.info("####### fileSorts" + projectName + " ###### " + sortName);
 
         QueryWrapper<FileSort> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(SqlConstants.SORT_NAME, sortName);
-        queryWrapper.eq(SqlConstants.PROJECT_NAME, projectName);
-        queryWrapper.eq(SqlConstants.STATUS, EStatus.ENABLE);
+        queryWrapper.eq(SQLConf.SORT_NAME, sortName);
+        queryWrapper.eq(SQLConf.PROJECT_NAME, projectName);
+        queryWrapper.eq(SQLConf.STATUS, EStatus.ENABLE);
         List<FileSort> fileSorts = fileSortService.list(queryWrapper);
 
-        FileSort fileSort;
+        System.out.println("fileSorts" + JsonUtils.objectToJson(fileSorts));
+
+        FileSort fileSort = null;
         if (fileSorts.size() > 0) {
             fileSort = fileSorts.get(0);
-            log.info("====fileSort====" + JSON.toJSONString(fileSort));
+            log.info("====fileSort====" + JsonUtils.objectToJson(fileSort));
         } else {
-            return ResultUtils.result(SystemConstants.ERROR, "文件不被允许上传");
+            return ResultUtil.result(SysConf.ERROR, "文件不被允许上传");
         }
 
         String sortUrl = fileSort.getUrl();
@@ -390,14 +462,15 @@ public class FileController {
             sortUrl = fileSort.getUrl();
         }
 
-        List<File> lists = new ArrayList<>();
+        List<com.ginkgoblog.picture.entity.File> lists = new ArrayList<>();
 
-        // 文件上传
+        //文件上传
         if (urlList != null && urlList.size() > 0) {
             for (String itemUrl : urlList) {
 
                 //获取新文件名(默认为jpg)
-                String newFileName = System.currentTimeMillis() + ".jpg";
+                String newFileName = String.valueOf(System.currentTimeMillis() + ".jpg");
+
                 //文件绝对路径
                 String newPath = path + sortUrl + "/jpg/" + DateUtils.getYears() + "/"
                         + DateUtils.getMonth() + "/" + DateUtils.getDay() + "/";
@@ -409,10 +482,15 @@ public class FileController {
                 log.info("saveUrl:" + saveUrl);
 
                 // 将图片上传到本地服务器中以及七牛云中
-                BufferedOutputStream out;
+                BufferedOutputStream out = null;
+                QiniuUtil qn = new QiniuUtil();
                 String qiNiuUrl = "";
+                List<String> list = new ArrayList<>();
                 java.io.File dest = null;
+
                 FileOutputStream os = null;
+
+                // 输入流
                 InputStream inputStream = null;
 
                 // 判断是否能够上传至本地
@@ -452,7 +530,7 @@ public class FileController {
                     } catch (Exception e) {
                         log.info("==上传文件异常===url:" + saveUrl + "-----");
                         e.printStackTrace();
-                        return ResultUtils.result(SystemConstants.ERROR, "获取图片超时，文件上传失败");
+                        return ResultUtil.result(SysConf.ERROR, "获取图片超时，文件上传失败");
                     } finally {
                         try {
                             // 完毕，关闭所有链接
@@ -481,7 +559,7 @@ public class FileController {
                         }
                         out = new BufferedOutputStream(new FileOutputStream(dest));
                         out.write(fileData.getBytes());
-                        QiniuUtil qn = new QiniuUtil();
+                        qn = new QiniuUtil();
 
                         // TODO 不关闭流，小图片就无法显示？
                         out.flush();
@@ -490,7 +568,7 @@ public class FileController {
                         qiNiuUrl = qn.uploadQiniu(dest, qiNiuConfig);
                     } catch (Exception e) {
                         log.error(e.getMessage());
-                        return ResultUtils.result(SystemConstants.ERROR, "请先配置七牛云");
+                        return ResultUtil.result(SysConf.ERROR, "请先配置七牛云");
                     } finally {
                         if (dest != null && dest.getParentFile().exists()) {
                             dest.delete();
@@ -499,7 +577,7 @@ public class FileController {
                 }
 
 
-                File file = new File();
+                com.ginkgoblog.picture.entity.File file = new com.ginkgoblog.picture.entity.File();
 
                 file.setCreateTime(new Date(System.currentTimeMillis()));
                 file.setFileSortUid(fileSort.getUid());
@@ -508,8 +586,11 @@ public class FileController {
                 file.setPicExpandedName("jpg");
                 file.setPicName(newFileName);
 
+                String url = "";
+
                 // 设置本地图片
                 file.setPicUrl(localPictureBaseUrl + picurl);
+
                 // 设置七牛云图片
                 file.setQiNiuUrl(qiNiuPictureBaseUrl + qiNiuUrl);
 
@@ -519,43 +600,51 @@ public class FileController {
                 fileService.save(file);
                 lists.add(file);
             }
-            // 保存成功返回数据
-            return ResultUtils.result(SystemConstants.SUCCESS, lists);
+            //保存成功返回数据
+            return ResultUtil.result(SysConf.SUCCESS, lists);
         }
-        return ResultUtils.result(SystemConstants.ERROR, "请上传图片");
+        return ResultUtil.result(SysConf.ERROR, "请上传图片");
     }
 
-    @ApiOperation("通过URL上传图片")
-    @PostMapping("/uploadPicsByUrl2")
-    public Object uploadPicsByUrl2(@RequestBody FileVO fileVO) {
-        Map<String, Object> resultMap = fileVO.getSystemConfig();
-        String uploadQiNiu = resultMap.get(SqlConstants.UPLOAD_QI_NIU).toString();
-        String uploadLocal = resultMap.get(SqlConstants.UPLOAD_LOCAL).toString();
-        String localPictureBaseUrl = resultMap.get(SqlConstants.LOCAL_PICTURE_BASE_URL).toString();
-        String qiNiuPictureBaseUrl = resultMap.get(SqlConstants.QI_NIU_PICTURE_BASE_URL).toString();
-        String qiNiuAccessKey = resultMap.get(SqlConstants.QI_NIU_ACCESS_KEY).toString();
-        String qiNiuSecretKey = resultMap.get(SqlConstants.QI_NIU_SECRET_KEY).toString();
-        String qiNiuBucket = resultMap.get(SqlConstants.QI_NIU_BUCKET).toString();
-        String qiNiuArea = resultMap.get(SqlConstants.QI_NIU_AREA).toString();
 
-        if (EOpenStatus.OPEN.equals(uploadQiNiu) && (StringUtils.isEmpty(qiNiuPictureBaseUrl)
-                || StringUtils.isEmpty(qiNiuAccessKey) || StringUtils.isEmpty(qiNiuSecretKey)
-                || StringUtils.isEmpty(qiNiuBucket) || StringUtils.isEmpty(qiNiuArea))) {
-            return ResultUtils.result(SystemConstants.ERROR, "请先配置七牛云");
+    /**
+     * 通过URL将图片上传到自己服务器中（用于Github和Gitee的头像上传）
+     *
+     * @param fileVO
+     * @param result
+     * @return
+     */
+    @ApiOperation(value = "通过URL上传图片", notes = "通过URL上传图片")
+    @PostMapping("/uploadPicsByUrl2")
+    public Object uploadPicsByUrl2(@RequestBody FileVO fileVO, BindingResult result) {
+
+        Map<String, Object> resultMap = fileVO.getSystemConfig();
+        String uploadQiNiu = resultMap.get(SQLConf.UPLOAD_QI_NIU).toString();
+        String uploadLocal = resultMap.get(SQLConf.UPLOAD_LOCAL).toString();
+        String localPictureBaseUrl = resultMap.get(SQLConf.LOCAL_PICTURE_BASE_URL).toString();
+        String qiNiuPictureBaseUrl = resultMap.get(SQLConf.QI_NIU_PICTURE_BASE_URL).toString();
+        String qiNiuAccessKey = resultMap.get(SQLConf.QI_NIU_ACCESS_KEY).toString();
+        String qiNiuSecretKey = resultMap.get(SQLConf.QI_NIU_SECRET_KEY).toString();
+        String qiNiuBucket = resultMap.get(SQLConf.QI_NIU_BUCKET).toString();
+        String qiNiuArea = resultMap.get(SQLConf.QI_NIU_AREA).toString();
+
+        if (EOpenStatus.OPEN.equals(uploadQiNiu) && (StringUtils.isEmpty(qiNiuPictureBaseUrl) || StringUtils.isEmpty(qiNiuAccessKey)
+                || StringUtils.isEmpty(qiNiuSecretKey) || StringUtils.isEmpty(qiNiuBucket) || StringUtils.isEmpty(qiNiuArea))) {
+            return ResultUtil.result(SysConf.ERROR, "请先配置七牛云");
         }
 
         if (EOpenStatus.OPEN.equals(uploadLocal) && StringUtils.isEmpty(localPictureBaseUrl)) {
-            return ResultUtils.result(SystemConstants.ERROR, "请先配置本地图片域名");
+            return ResultUtil.result(SysConf.ERROR, "请先配置本地图片域名");
         }
 
         // 七牛云配置
         Map<String, String> qiNiuConfig = new HashMap<>();
-        qiNiuConfig.put(SqlConstants.QI_NIU_ACCESS_KEY, qiNiuAccessKey);
-        qiNiuConfig.put(SqlConstants.QI_NIU_SECRET_KEY, qiNiuSecretKey);
-        qiNiuConfig.put(SqlConstants.QI_NIU_BUCKET, qiNiuBucket);
-        qiNiuConfig.put(SqlConstants.QI_NIU_AREA, qiNiuArea);
-        qiNiuConfig.put(SqlConstants.UPLOAD_QI_NIU, uploadQiNiu);
-        qiNiuConfig.put(SqlConstants.UPLOAD_LOCAL, uploadLocal);
+        qiNiuConfig.put(SysConf.QI_NIU_ACCESS_KEY, qiNiuAccessKey);
+        qiNiuConfig.put(SysConf.QI_NIU_SECRET_KEY, qiNiuSecretKey);
+        qiNiuConfig.put(SysConf.QI_NIU_BUCKET, qiNiuBucket);
+        qiNiuConfig.put(SysConf.QI_NIU_AREA, qiNiuArea);
+        qiNiuConfig.put(SysConf.UPLOAD_QI_NIU, uploadQiNiu);
+        qiNiuConfig.put(SysConf.UPLOAD_LOCAL, uploadLocal);
 
         String userUid = fileVO.getUserUid();
         String adminUid = fileVO.getAdminUid();
@@ -563,46 +652,58 @@ public class FileController {
         String sortName = fileVO.getSortName();
         List<String> urlList = fileVO.getUrlList();
 
-        // projectName默认base
+        //projectName现在默认base
         if (StringUtils.isEmpty(projectName)) {
             projectName = "base";
         }
-        // 这里检测用户上传，如果不是网站的用户或会员就不能调用
+
+        //这里可以检测用户上传，如果不是网站的用户或会员就不能调用
         if (StringUtils.isEmpty(userUid) && StringUtils.isEmpty(adminUid)) {
-            return ResultUtils.result(SystemConstants.ERROR, "请先注册");
+            return ResultUtil.result(SysConf.ERROR, "请先注册");
+        } else {
+
         }
+
         log.info("####### fileSorts" + projectName + " ###### " + sortName);
 
         QueryWrapper<FileSort> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq(SqlConstants.SORT_NAME, sortName);
-        queryWrapper.eq(SqlConstants.PROJECT_NAME, projectName);
-        queryWrapper.eq(SqlConstants.STATUS, EStatus.ENABLE);
+        queryWrapper.eq(SQLConf.SORT_NAME, sortName);
+        queryWrapper.eq(SQLConf.PROJECT_NAME, projectName);
+        queryWrapper.eq(SQLConf.STATUS, EStatus.ENABLE);
         List<FileSort> fileSorts = fileSortService.list(queryWrapper);
 
-        FileSort fileSort;
+        System.out.println("fileSorts" + JsonUtils.objectToJson(fileSorts));
+
+        FileSort fileSort = null;
         if (fileSorts.size() > 0) {
             fileSort = fileSorts.get(0);
-            log.info("====fileSort====" + JSON.toJSONString(fileSort));
+            log.info("====fileSort====" + JsonUtils.objectToJson(fileSort));
         } else {
-            return ResultUtils.result(SystemConstants.ERROR, "文件不被允许上传");
+            return ResultUtil.result(SysConf.ERROR, "文件不被允许上传");
         }
 
         String sortUrl = fileSort.getUrl();
-        // 判断url是否为空，如果为空，使用默认
+
+        //判断url是否为空，如果为空，使用默认
         if (StringUtils.isEmpty(sortUrl)) {
             sortUrl = "base/common/";
+        } else {
+            sortUrl = fileSort.getUrl();
         }
 
-        List<File> lists = new ArrayList<>();
-        // 文件上传
+        List<com.ginkgoblog.picture.entity.File> lists = new ArrayList<>();
+
+        //文件上传
         if (urlList != null && urlList.size() > 0) {
             for (String itemUrl : urlList) {
-                // 获取新文件名(默认为jpg)
-                String newFileName = System.currentTimeMillis() + ".jpg";
-                // 文件绝对路径
+
+                //获取新文件名(默认为jpg)
+                String newFileName = String.valueOf(System.currentTimeMillis() + ".jpg");
+
+                //文件绝对路径
                 String newPath = path + sortUrl + "/jpg/" + DateUtils.getYears() + "/"
                         + DateUtils.getMonth() + "/" + DateUtils.getDay() + "/";
-                // 文件相对路径
+                //文件相对路径
                 String picurl = sortUrl + "/jpg/" + DateUtils.getYears() + "/"
                         + DateUtils.getMonth() + "/" + DateUtils.getDay() + "/" + newFileName;
                 String saveUrl = newPath + newFileName;
@@ -610,10 +711,15 @@ public class FileController {
                 log.info("saveUrl:" + saveUrl);
 
                 // 将图片上传到本地服务器中以及七牛云中
-                BufferedOutputStream out;
+                BufferedOutputStream out = null;
+                QiniuUtil qn = new QiniuUtil();
                 String qiNiuUrl = "";
+                List<String> list = new ArrayList<>();
                 java.io.File dest = null;
+
                 FileOutputStream os = null;
+
+                // 输入流
                 InputStream inputStream = null;
 
                 // 判断是否能够上传至本地
@@ -626,13 +732,17 @@ public class FileController {
                     try {
                         // 构造URL
                         URL url = new URL(itemUrl);
+
                         // 打开连接
                         URLConnection con = url.openConnection();
+
                         // 设置用户代理
                         con.setRequestProperty("User-agent", "	Mozilla/5.0 (Windows NT 6.1; WOW64; rv:33.0) Gecko/20100101 Firefox/33.0");
+
                         // 设置10秒
                         con.setConnectTimeout(10000);
                         con.setReadTimeout(10000);
+
                         // 当获取的相片无法正常显示的时候，需要给一个默认图片
                         inputStream = con.getInputStream();
 
@@ -640,6 +750,7 @@ public class FileController {
                         byte[] bs = new byte[1024];
                         // 读取到的数据长度
                         int len;
+
                         java.io.File file = new java.io.File(saveUrl);
                         os = new FileOutputStream(file, true);
                         // 开始读取
@@ -647,18 +758,16 @@ public class FileController {
                             os.write(bs, 0, len);
                         }
 
+
                     } catch (Exception e) {
                         log.info("==上传文件异常===url:" + saveUrl + "-----");
                         e.printStackTrace();
-                        return ResultUtils.result(SystemConstants.ERROR, "获取图片超时，文件上传失败");
+                        return ResultUtil.result(SysConf.ERROR, "获取图片超时，文件上传失败");
                     } finally {
                         try {
-                            if (os != null) {
-                                os.close();
-                            }
-                            if (inputStream != null) {
-                                inputStream.close();
-                            }
+                            // 完毕，关闭所有链接
+                            os.close();
+                            inputStream.close();
                         } catch (Exception e) {
                             log.error(e.getMessage());
                         }
@@ -668,7 +777,7 @@ public class FileController {
                 // 上传七牛云，判断是否能够上传七牛云
                 if ("1".equals(uploadQiNiu)) {
                     try {
-                        java.io.File pdfFile = new java.io.File(saveUrl);
+                        java.io.File pdfFile = new File(saveUrl);
                         FileInputStream fileInputStream = new FileInputStream(pdfFile);
                         MultipartFile fileData = new MockMultipartFile(pdfFile.getName(), pdfFile.getName(),
                                 ContentType.APPLICATION_OCTET_STREAM.toString(), fileInputStream);
@@ -682,15 +791,16 @@ public class FileController {
                         }
                         out = new BufferedOutputStream(new FileOutputStream(dest));
                         out.write(fileData.getBytes());
-                        QiniuUtil qn = new QiniuUtil();
+                        qn = new QiniuUtil();
 
                         // TODO 不关闭流，小图片就无法显示？
                         out.flush();
                         out.close();
+
                         qiNiuUrl = qn.uploadQiniu(dest, qiNiuConfig);
                     } catch (Exception e) {
                         log.error(e.getMessage());
-                        return ResultUtils.result(SystemConstants.ERROR, "请先配置七牛云");
+                        return ResultUtil.result(SysConf.ERROR, "请先配置七牛云");
                     } finally {
                         if (dest != null && dest.getParentFile().exists()) {
                             dest.delete();
@@ -699,7 +809,9 @@ public class FileController {
                 }
 
 
-                File file = new File();
+                com.ginkgoblog.picture.entity.File file = new com.ginkgoblog.picture.entity.File();
+
+                file.setCreateTime(new Date(System.currentTimeMillis()));
                 file.setFileSortUid(fileSort.getUid());
                 file.setFileOldName(itemUrl);
                 file.setFileSize(0L);
@@ -710,8 +822,10 @@ public class FileController {
 
                 // 设置本地图片
                 file.setPicUrl(picurl);
+
                 // 设置七牛云图片
                 file.setQiNiuUrl(qiNiuUrl);
+
                 file.setStatus(EStatus.ENABLE);
                 file.setUserUid(userUid);
                 file.setAdminUid(adminUid);
@@ -719,10 +833,8 @@ public class FileController {
                 lists.add(file);
             }
             //保存成功返回数据
-            return ResultUtils.result(SystemConstants.SUCCESS, lists);
+            return ResultUtil.result(SysConf.SUCCESS, lists);
         }
-        return ResultUtils.result(SystemConstants.ERROR, "请上传图片");
-
-
+        return ResultUtil.result(SysConf.ERROR, "请上传图片");
     }
 }

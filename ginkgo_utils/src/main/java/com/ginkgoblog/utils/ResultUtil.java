@@ -11,7 +11,7 @@ import java.util.Map;
  * @author maomao
  * @date 2021-01-20
  */
-public class ResultUtils {
+public class ResultUtil {
     /**
      * 统一返回的方法
      *

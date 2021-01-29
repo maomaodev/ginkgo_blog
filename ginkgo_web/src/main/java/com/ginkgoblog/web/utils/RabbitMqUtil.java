@@ -1,6 +1,6 @@
 package com.ginkgoblog.web.utils;
 
-import com.ginkgoblog.base.constants.SqlConstants;
+import com.ginkgoblog.commons.constants.SysConf;
 import com.ginkgoblog.commons.entity.User;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +15,7 @@ import java.util.Map;
  * @date 2021-01-26
  */
 @Component
-public class RabbitMqUtils {
+public class RabbitMqUtil {
     public static final String EXCHANGE_DIRECT = "exchange.direct";
     public static final String ROUTING_KEY_EMAIL = "ginkgo.email";
     
@@ -36,8 +36,8 @@ public class RabbitMqUtils {
      */
     private void sendEmail(String email, String text) {
         Map<String, Object> result = new HashMap<>();
-        result.put(SqlConstants.RECEIVER, email);
-        result.put(SqlConstants.TEXT, text);
+        result.put(SysConf.RECEIVER, email);
+        result.put(SysConf.TEXT, text);
         // 发送到RabbitMq
         rabbitTemplate.convertAndSend(EXCHANGE_DIRECT, ROUTING_KEY_EMAIL, result);
     }
@@ -46,13 +46,13 @@ public class RabbitMqUtils {
      * 发送评论邮件
      */
     public void sendCommentEmail(Map<String, String> map) {
-        String email = map.get(SqlConstants.EMAIL);
-        String text = map.get(SqlConstants.TEXT);
-        String toText = map.get(SqlConstants.TO_TEXT);
-        String nickName = map.get(SqlConstants.NICKNAME);
-        String toUserNickName = map.get(SqlConstants.TO_NICKNAME);
-        String userUid = map.get(SqlConstants.USER_UID);
-        String url = map.get(SqlConstants.URL);
+        String email = map.get(SysConf.EMAIL);
+        String text = map.get(SysConf.TEXT);
+        String toText = map.get(SysConf.TO_TEXT);
+        String nickName = map.get(SysConf.NICKNAME);
+        String toUserNickName = map.get(SysConf.TO_NICKNAME);
+        String userUid = map.get(SysConf.USER_UID);
+        String url = map.get(SysConf.URL);
         String content =
                 "<html>\r\n" +
                         " <head>\r\n" +

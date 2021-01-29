@@ -15,7 +15,7 @@ import java.util.List;
  * @author maomao
  * @date 2021-01-24
  */
-public enum AspectUtils {
+public enum AspectUtil {
     INSTANCE;
 
     /**

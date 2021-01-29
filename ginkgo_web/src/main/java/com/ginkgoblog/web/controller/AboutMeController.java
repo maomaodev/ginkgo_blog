@@ -1,12 +1,11 @@
 package com.ginkgoblog.web.controller;
 
-import com.ginkgoblog.base.constants.SqlConstants;
-import com.ginkgoblog.base.constants.SystemConstants;
 import com.ginkgoblog.base.enums.EBehavior;
 import com.ginkgoblog.commons.service.AdminService;
 import com.ginkgoblog.commons.service.WebConfigService;
-import com.ginkgoblog.utils.ResultUtils;
-import com.ginkgoblog.web.log.OperationLog;
+import com.ginkgoblog.utils.ResultUtil;
+import com.ginkgoblog.web.constants.SysConf;
+import com.ginkgoblog.web.log.BussinessLog;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
@@ -32,18 +31,18 @@ public class AboutMeController {
     @Autowired
     private WebConfigService webConfigService;
 
-    @OperationLog(value = "关于我", behavior = EBehavior.VISIT_PAGE)
+    @BussinessLog(value = "关于我", behavior = EBehavior.VISIT_PAGE)
     @ApiOperation("关于我")
     @GetMapping("/getMe")
     public String getMe() {
         log.info("获取关于我的信息");
-        return ResultUtils.result(SystemConstants.SUCCESS, adminService.getAdminByUser(SqlConstants.ADMIN));
+        return ResultUtil.result(SysConf.SUCCESS, adminService.getAdminByUser(SysConf.ADMIN));
     }
 
     @ApiOperation("获取联系方式")
     @GetMapping("/getContact")
     public String getContact() {
         log.info("获取联系方式");
-        return ResultUtils.result(SystemConstants.SUCCESS, webConfigService.getWebConfigByShowList());
+        return ResultUtil.result(SysConf.SUCCESS, webConfigService.getWebConfigByShowList());
     }
 }

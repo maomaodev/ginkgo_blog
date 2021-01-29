@@ -2,11 +2,13 @@ package com.ginkgoblog.admin.log;
 
 import cn.hutool.core.date.DateUnit;
 import cn.hutool.core.date.DateUtil;
-import com.ginkgoblog.base.constants.RedisConstants;
+import com.ginkgoblog.admin.constants.SysConf;
+import com.ginkgoblog.base.constants.BaseSysConf;
 import com.ginkgoblog.base.holder.RequestHolder;
 import com.ginkgoblog.commons.config.SecurityUser;
 import com.ginkgoblog.commons.entity.SysLog;
 import com.ginkgoblog.utils.IpUtils;
+import com.ginkgoblog.utils.RedisUtil;
 import com.ginkgoblog.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.StringRedisTemplate;
@@ -27,7 +29,7 @@ import java.util.concurrent.TimeUnit;
 public class SysLogHandle extends RequestAwareRunnable {
 
     @Autowired
-    private StringRedisTemplate redisTemplate;
+    private RedisUtil redisUtil;
 
     /**
      * 参数列表
@@ -82,14 +84,12 @@ public class SysLogHandle extends RequestAwareRunnable {
         sysLog.setIp(ip);
 
         //从Redis中获取IP来源
-        String jsonResult = redisTemplate.opsForValue().get(
-                RedisConstants.IP_SOURCE + RedisConstants.SEGMENTATION + ip);
+        String jsonResult = redisUtil.get(SysConf.IP_SOURCE + BaseSysConf.REDIS_SEGMENTATION + ip);
         if (StringUtils.isEmpty(jsonResult)) {
-            String addresses = IpUtils.getAddresses(
-                    RedisConstants.IP + RedisConstants.EQUAL_TO + ip, RedisConstants.UTF_8);
+            String addresses = IpUtils.getAddresses(SysConf.IP + SysConf.EQUAL_TO + ip, SysConf.UTF_8);
             if (StringUtils.isNotEmpty(addresses)) {
                 sysLog.setIpSource(addresses);
-                redisTemplate.opsForValue().set(RedisConstants.IP_SOURCE + RedisConstants.SEGMENTATION + ip, addresses, 24, TimeUnit.HOURS);
+                redisUtil.setEx(SysConf.IP_SOURCE + BaseSysConf.REDIS_SEGMENTATION + ip, addresses, 24, TimeUnit.HOURS);
             }
         } else {
             sysLog.setIpSource(jsonResult);

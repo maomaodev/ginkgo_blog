@@ -1,12 +1,12 @@
 package com.ginkgoblog.web.controller;
 
-import com.ginkgoblog.base.constants.SystemConstants;
 import com.ginkgoblog.base.enums.EBehavior;
 import com.ginkgoblog.commons.service.BlogService;
 import com.ginkgoblog.commons.service.TagService;
-import com.ginkgoblog.utils.ResultUtils;
+import com.ginkgoblog.utils.ResultUtil;
 import com.ginkgoblog.utils.StringUtils;
-import com.ginkgoblog.web.log.OperationLog;
+import com.ginkgoblog.web.constants.SysConf;
+import com.ginkgoblog.web.log.BussinessLog;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * 标签 Controller 层
@@ -33,25 +35,26 @@ public class TagController {
     @Autowired
     BlogService blogService;
 
-    @ApiOperation("获取标签的信息")
+    @ApiOperation(value = "获取标签的信息", notes = "获取标签的信息")
     @GetMapping("/getTagList")
     public String getTagList() {
         log.info("获取标签信息");
-        return ResultUtils.result(SystemConstants.SUCCESS, tagService.getList());
+        return ResultUtil.result(SysConf.SUCCESS, tagService.getList());
     }
 
-    @ApiOperation("通过TagUid获取文章")
+
+    @BussinessLog(value = "点击标签", behavior = EBehavior.VISIT_TAG)
+    @ApiOperation(value = "通过TagUid获取文章", notes = "通过TagUid获取文章")
     @GetMapping("/getArticleByTagUid")
-    @OperationLog(value = "点击标签", behavior = EBehavior.VISIT_TAG)
-    public String getArticleByTagUid(
-            @ApiParam(name = "tagUid", value = "标签UID") @RequestParam(name = "tagUid", required = false) String tagUid,
-            @ApiParam(name = "currentPage", value = "当前页数") @RequestParam(name = "currentPage", required = false, defaultValue = "1") Long currentPage,
-            @ApiParam(name = "pageSize", value = "每页显示数目") @RequestParam(name = "pageSize", required = false, defaultValue = "10") Long pageSize) {
+    public String getArticleByTagUid(HttpServletRequest request,
+                                     @ApiParam(name = "tagUid", value = "标签UID", required = false) @RequestParam(name = "tagUid", required = false) String tagUid,
+                                     @ApiParam(name = "currentPage", value = "当前页数", required = false) @RequestParam(name = "currentPage", required = false, defaultValue = "1") Long currentPage,
+                                     @ApiParam(name = "pageSize", value = "每页显示数目", required = false) @RequestParam(name = "pageSize", required = false, defaultValue = "10") Long pageSize) {
 
         if (StringUtils.isEmpty(tagUid)) {
-            return ResultUtils.result(SystemConstants.ERROR, "传入TagUid不能为空");
+            return ResultUtil.result(SysConf.ERROR, "传入TagUid不能为空");
         }
         log.info("通过blogSortUid获取文章列表");
-        return ResultUtils.result(SystemConstants.SUCCESS, blogService.searchBlogByTag(tagUid, currentPage, pageSize));
+        return ResultUtil.result(SysConf.SUCCESS, blogService.searchBlogByTag(tagUid, currentPage, pageSize));
     }
 }

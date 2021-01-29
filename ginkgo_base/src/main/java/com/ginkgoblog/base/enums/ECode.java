@@ -1,12 +1,12 @@
-package com.ginkgoblog.base.constants;
+package com.ginkgoblog.base.enums;
 
 /**
  * 状态码常量
  *
  * @author maomao
- * @date 2021-01-26
+ * @date 2021-01-29
  */
-public class CodeConstants {
+public class ECode {
     /**
      * 操作成功
      */

@@ -2,20 +2,20 @@ package com.ginkgoblog.web.controller;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.ginkgoblog.base.constants.CodeConstants;
-import com.ginkgoblog.base.constants.SystemConstants;
 import com.ginkgoblog.base.enums.EBehavior;
+import com.ginkgoblog.base.enums.ECode;
 import com.ginkgoblog.base.enums.EPublish;
 import com.ginkgoblog.base.enums.EStatus;
 import com.ginkgoblog.base.holder.RequestHolder;
 import com.ginkgoblog.commons.entity.Blog;
 import com.ginkgoblog.commons.feign.PictureFeignClient;
 import com.ginkgoblog.commons.service.BlogService;
-import com.ginkgoblog.commons.utils.WebUtils;
+import com.ginkgoblog.commons.utils.WebUtil;
 import com.ginkgoblog.utils.IpUtils;
-import com.ginkgoblog.utils.ResultUtils;
+import com.ginkgoblog.utils.ResultUtil;
 import com.ginkgoblog.utils.StringUtils;
-import com.ginkgoblog.web.log.OperationLog;
+import com.ginkgoblog.web.constants.SysConf;
+import com.ginkgoblog.web.log.BussinessLog;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -51,89 +51,101 @@ public class BlogContentController {
     @Autowired
     private StringRedisTemplate stringRedisTemplate;
     @Autowired
-    private WebUtils webUtils;
+    private WebUtil webUtil;
     @Value(value = "${BLOG.ORIGINAL_TEMPLATE}")
     private String ORIGINAL_TEMPLATE;
     @Value(value = "${BLOG.REPRINTED_TEMPLATE}")
     private String REPRINTED_TEMPLATE;
 
-    @OperationLog(value = "点击博客", behavior = EBehavior.BLOG_CONTENT)
+    @BussinessLog(value = "点击博客", behavior = EBehavior.BLOG_CONTENT)
     @ApiOperation(value = "通过Uid获取博客内容", notes = "通过Uid获取博客内容")
     @GetMapping("/getBlogByUid")
     public String getBlogByUid(@ApiParam(name = "uid", value = "博客UID", required = false) @RequestParam(name = "uid", required = false) String uid) {
-        if (StringUtils.isEmpty(uid)) {
-            return ResultUtils.result(SystemConstants.ERROR, "UID不能为空");
-        }
 
         HttpServletRequest request = RequestHolder.getRequest();
         String ip = IpUtils.getIpAddr(request);
+
+        if (StringUtils.isEmpty(uid)) {
+            return ResultUtil.result(SysConf.ERROR, "UID不能为空");
+        }
+
         Blog blog = blogService.getById(uid);
-        if (blog == null || blog.getStatus() == EStatus.DISABLED
-                || blog.getIsPublish().equals(EPublish.NO_PUBLISH)) {
-            return ResultUtils.result(CodeConstants.ERROR, "该文章已下架或被删除");
+
+        if (blog == null || blog.getStatus() == EStatus.DISABLED || blog.getIsPublish() == EPublish.NO_PUBLISH) {
+            return ResultUtil.result(ECode.ERROR, "该文章已下架或被删除");
         }
 
-        // 设置文章版权申明
-        setBlogCopyright(blog);
-        // 设置博客标签
-        blogService.setTagByBlog(blog);
-        // 获取分类
-        blogService.setSortByBlog(blog);
-        // 设置博客标题图
-        setPhotoListByBlog(blog);
 
-        // 从Redis取出数据，判断该用户是否点击过
-        String jsonResult = stringRedisTemplate.opsForValue().get("BLOG_CLICK:" + ip + "#" + uid);
-        if (StringUtils.isEmpty(jsonResult)) {
-            // 给博客点击数增加
-            Integer clickCount = blog.getClickCount() + 1;
-            blog.setClickCount(clickCount);
-            blog.updateById();
-            // 将该用户点击记录存储到redis中, 24小时后过期，即在这个时间内同一用户点击同一博客不再增加点击数
-            stringRedisTemplate.opsForValue().set("BLOG_CLICK:" + ip + "#" + uid,
-                    blog.getClickCount().toString(), 24, TimeUnit.HOURS);
+        if (blog != null) {
+
+            // 设置文章版权申明
+            setBlogCopyright(blog);
+
+            //设置博客标签
+            blogService.setTagByBlog(blog);
+
+            //获取分类
+            blogService.setSortByBlog(blog);
+
+            //设置博客标题图
+            setPhotoListByBlog(blog);
+
+            //从Redis取出数据，判断该用户是否点击过
+            String jsonResult = stringRedisTemplate.opsForValue().get("BLOG_CLICK:" + ip + "#" + uid);
+
+            if (StringUtils.isEmpty(jsonResult)) {
+
+                //给博客点击数增加
+                Integer clickCount = blog.getClickCount() + 1;
+                blog.setClickCount(clickCount);
+                blog.updateById();
+
+                //将该用户点击记录存储到redis中, 24小时后过期
+                stringRedisTemplate.opsForValue().set("BLOG_CLICK:" + ip + "#" + uid, blog.getClickCount().toString(),
+                        24, TimeUnit.HOURS);
+            }
         }
-        return ResultUtils.result(SystemConstants.SUCCESS, blog);
+        log.info("返回结果");
+        return ResultUtil.result(SysConf.SUCCESS, blog);
     }
 
-    @ApiOperation("通过Uid获取博客点赞数")
+    @ApiOperation(value = "通过Uid获取博客点赞数", notes = "通过Uid获取博客点赞数")
     @GetMapping("/getBlogPraiseCountByUid")
-    public String getBlogPraiseCountByUid(@ApiParam(name = "uid", value = "博客UID")
-                                          @RequestParam(name = "uid", required = false) String uid) {
+    public String getBlogPraiseCountByUid(@ApiParam(name = "uid", value = "博客UID", required = false) @RequestParam(name = "uid", required = false) String uid) {
 
-        return ResultUtils.result(SystemConstants.SUCCESS, blogService.getBlogPraiseCountByUid(uid));
+        return ResultUtil.result(SysConf.SUCCESS, blogService.getBlogPraiseCountByUid(uid));
     }
 
-    @OperationLog(value = "通过Uid给博客点赞", behavior = EBehavior.BLOG_PRAISE)
-    @ApiOperation("通过Uid给博客点赞")
+    @BussinessLog(value = "通过Uid给博客点赞", behavior = EBehavior.BLOG_PRAISE)
+    @ApiOperation(value = "通过Uid给博客点赞", notes = "通过Uid给博客点赞")
     @GetMapping("/praiseBlogByUid")
-    public String praiseBlogByUid(@ApiParam(name = "uid", value = "博客UID") @RequestParam(name = "uid", required = false) String uid) {
+    public String praiseBlogByUid(@ApiParam(name = "uid", value = "博客UID", required = false) @RequestParam(name = "uid", required = false) String uid) {
 
         return blogService.praiseBlogByUid(uid);
     }
 
-    @ApiOperation("根据标签Uid获取相关的博客")
+    @ApiOperation(value = "根据标签Uid获取相关的博客", notes = "根据标签获取相关的博客")
     @GetMapping("/getSameBlogByTagUid")
     public String getSameBlogByTagUid(@ApiParam(name = "tagUid", value = "博客标签UID", required = true) @RequestParam(name = "tagUid", required = true) String tagUid,
                                       @ApiParam(name = "currentPage", value = "当前页数", required = false) @RequestParam(name = "currentPage", required = false, defaultValue = "1") Long currentPage,
                                       @ApiParam(name = "pageSize", value = "每页显示数目", required = false) @RequestParam(name = "pageSize", required = false, defaultValue = "10") Long pageSize) {
         if (StringUtils.isEmpty(tagUid)) {
-            return ResultUtils.result(SystemConstants.ERROR, "标签UID不能为空");
+            return ResultUtil.result(SysConf.ERROR, "标签UID不能为空");
         }
-        return ResultUtils.result(SystemConstants.SUCCESS, blogService.getSameBlogByTagUid(tagUid));
+        return ResultUtil.result(SysConf.SUCCESS, blogService.getSameBlogByTagUid(tagUid));
     }
 
-    @ApiOperation("根据BlogUid获取相关的博客")
+    @ApiOperation(value = "根据BlogUid获取相关的博客", notes = "根据BlogUid获取相关的博客")
     @GetMapping("/getSameBlogByBlogUid")
-    public String getSameBlogByBlogUid(@ApiParam(name = "blogUid", value = "博客标签UID", required = true) @RequestParam(name = "blogUid", required = true) String blogUid) {
+    public String getSameBlogByBlogUid(HttpServletRequest request,
+                                       @ApiParam(name = "blogUid", value = "博客标签UID", required = true) @RequestParam(name = "blogUid", required = true) String blogUid) {
         if (StringUtils.isEmpty(blogUid)) {
-            return ResultUtils.result(SystemConstants.ERROR, "博客UID不能为空");
+            return ResultUtil.result(SysConf.ERROR, "博客UID不能为空");
         }
-        // 获取同博客分类下的博客
         List<Blog> blogList = blogService.getSameBlogByBlogUid(blogUid);
         IPage<Blog> pageList = new Page<>();
         pageList.setRecords(blogList);
-        return ResultUtils.result(SystemConstants.SUCCESS, pageList);
+        return ResultUtil.result(SysConf.SUCCESS, pageList);
     }
 
     /**
@@ -142,9 +154,10 @@ public class BlogContentController {
      * @param blog
      */
     private void setPhotoListByBlog(Blog blog) {
+        //获取标题图片
         if (blog != null && !StringUtils.isEmpty(blog.getFileUid())) {
-            String result = pictureFeignClient.getPicture(blog.getFileUid(), ",");
-            List<String> picList = webUtils.getPicture(result);
+            String result = this.pictureFeignClient.getPicture(blog.getFileUid(), ",");
+            List<String> picList = webUtil.getPicture(result);
             log.info("##### picList: #######" + picList);
             if (picList != null && picList.size() > 0) {
                 blog.setPhotoList(picList);
@@ -158,8 +171,9 @@ public class BlogContentController {
      * @param blog
      */
     private void setBlogCopyright(Blog blog) {
+
+        //如果是原创的话
         if ("1".equals(blog.getIsOriginal())) {
-            // 如果是原创的话
             blog.setCopyright(ORIGINAL_TEMPLATE);
         } else {
             String reprintedTemplate = REPRINTED_TEMPLATE;

@@ -23,7 +23,8 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
         "com.ginkgoblog.admin.log",
         "com.ginkgoblog.commons.config",
         "com.ginkgoblog.commons.service",
-        "com.ginkgoblog.commons.utils"
+        "com.ginkgoblog.commons.utils",
+        "com.ginkgoblog.utils"
 })
 public class AdminApplication {
     public static void main(String[] args) {

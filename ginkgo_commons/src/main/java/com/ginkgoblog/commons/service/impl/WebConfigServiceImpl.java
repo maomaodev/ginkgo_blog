@@ -1,19 +1,25 @@
 package com.ginkgoblog.commons.service.impl;
 
-import com.alibaba.fastjson.JSON;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.ginkgoblog.base.constants.SqlConstants;
 import com.ginkgoblog.base.enums.EAccountType;
+import com.ginkgoblog.commons.constants.MessageConf;
+import com.ginkgoblog.commons.constants.SQLConf;
+import com.ginkgoblog.commons.constants.SysConf;
 import com.ginkgoblog.commons.entity.WebConfig;
 import com.ginkgoblog.commons.feign.PictureFeignClient;
 import com.ginkgoblog.commons.mapper.WebConfigMapper;
 import com.ginkgoblog.commons.service.WebConfigService;
-import com.ginkgoblog.commons.utils.WebUtils;
+import com.ginkgoblog.commons.utils.WebUtil;
+import com.ginkgoblog.commons.vo.WebConfigVO;
+import com.ginkgoblog.utils.JsonUtils;
+import com.ginkgoblog.utils.ResultUtil;
 import com.ginkgoblog.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -26,33 +32,66 @@ import java.util.List;
 public class WebConfigServiceImpl extends ServiceImpl<WebConfigMapper, WebConfig> implements WebConfigService {
 
     @Autowired
-    WebUtils webUtils;
+    private WebUtil webUtil;
+    @Autowired
+    private WebConfigService webConfigService;
     @Autowired
     private PictureFeignClient pictureFeignClient;
 
     @Override
-    public WebConfig getWebConfigByShowList() {
-        QueryWrapper<WebConfig> queryWrapper = new QueryWrapper<>();
-        queryWrapper.orderByDesc(SqlConstants.CREATE_TIME);
-        WebConfig webConfig = this.getOne(queryWrapper);
+    public WebConfig getWebConfig() {
 
+        QueryWrapper<WebConfig> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc(SQLConf.CREATE_TIME);
+        WebConfig webConfig = webConfigService.getOne(queryWrapper);
+
+        //获取图片
         if (webConfig != null && StringUtils.isNotEmpty(webConfig.getLogo())) {
-            String pictureList = pictureFeignClient.getPicture(webConfig.getLogo(), SqlConstants.FILE_SEGMENTATION);
-            webConfig.setPhotoList(webUtils.getPicture(pictureList));
+            String pictureList = this.pictureFeignClient.getPicture(webConfig.getLogo(), SysConf.FILE_SEGMENTATION);
+            webConfig.setPhotoList(webUtil.getPicture(pictureList));
         }
 
-        // 获取支付宝收款二维码
-        if (StringUtils.isNotEmpty(webConfig.getAliPay())) {
-            String pictureList = pictureFeignClient.getPicture(webConfig.getAliPay(), SqlConstants.FILE_SEGMENTATION);
-            if (webUtils.getPicture(pictureList).size() > 0) {
-                webConfig.setAliPayPhoto(webUtils.getPicture(pictureList).get(0));
+        //获取支付宝收款二维码
+        if (webConfig != null && StringUtils.isNotEmpty(webConfig.getAliPay())) {
+            String pictureList = this.pictureFeignClient.getPicture(webConfig.getAliPay(), SysConf.FILE_SEGMENTATION);
+            if (webUtil.getPicture(pictureList).size() > 0) {
+                webConfig.setAliPayPhoto(webUtil.getPicture(pictureList).get(0));
+            }
+
+        }
+        //获取微信收款二维码
+        if (webConfig != null && StringUtils.isNotEmpty(webConfig.getWeixinPay())) {
+            String pictureList = this.pictureFeignClient.getPicture(webConfig.getWeixinPay(), SysConf.FILE_SEGMENTATION);
+            if (webUtil.getPicture(pictureList).size() > 0) {
+                webConfig.setWeixinPayPhoto(webUtil.getPicture(pictureList).get(0));
             }
         }
-        // 获取微信收款二维码
+        return webConfig;
+    }
+
+    @Override
+    public WebConfig getWebConfigByShowList() {
+        QueryWrapper<WebConfig> queryWrapper = new QueryWrapper<>();
+        queryWrapper.orderByDesc(SQLConf.CREATE_TIME);
+        WebConfig webConfig = webConfigService.getOne(queryWrapper);
+
+        if (ObjectUtil.isNotNull(webConfig) && StringUtils.isNotEmpty(webConfig.getLogo())) {
+            String pictureList = this.pictureFeignClient.getPicture(webConfig.getLogo(), SysConf.FILE_SEGMENTATION);
+            webConfig.setPhotoList(webUtil.getPicture(pictureList));
+        }
+
+        //获取支付宝收款二维码
+        if (StringUtils.isNotEmpty(webConfig.getAliPay())) {
+            String pictureList = this.pictureFeignClient.getPicture(webConfig.getAliPay(), SysConf.FILE_SEGMENTATION);
+            if (webUtil.getPicture(pictureList).size() > 0) {
+                webConfig.setAliPayPhoto(webUtil.getPicture(pictureList).get(0));
+            }
+        }
+        //获取微信收款二维码
         if (StringUtils.isNotEmpty(webConfig.getWeixinPay())) {
-            String pictureList = pictureFeignClient.getPicture(webConfig.getWeixinPay(), SqlConstants.FILE_SEGMENTATION);
-            if (webUtils.getPicture(pictureList).size() > 0) {
-                webConfig.setWeixinPayPhoto(webUtils.getPicture(pictureList).get(0));
+            String pictureList = this.pictureFeignClient.getPicture(webConfig.getWeixinPay(), SysConf.FILE_SEGMENTATION);
+            if (webUtil.getPicture(pictureList).size() > 0) {
+                webConfig.setWeixinPayPhoto(webUtil.getPicture(pictureList).get(0));
             }
         }
 
@@ -72,8 +111,7 @@ public class WebConfigServiceImpl extends ServiceImpl<WebConfigMapper, WebConfig
         String weChat = webConfig.getWeChat();
         webConfig.setWeChat("");
 
-        // 根据配置重新设置需要显示的内容
-        List<String> showList = JSON.parseArray(showListJson, String.class);
+        List<String> showList = JsonUtils.jsonToList(showListJson, String.class);
 
         for (String item : showList) {
             if (EAccountType.EMail.getCode().equals(item)) {
@@ -96,5 +134,59 @@ public class WebConfigServiceImpl extends ServiceImpl<WebConfigMapper, WebConfig
             }
         }
         return webConfig;
+    }
+
+    @Override
+    public String editWebConfig(WebConfigVO webConfigVO) {
+        if (StringUtils.isEmpty(webConfigVO.getUid())) {
+            WebConfig webConfig = new WebConfig();
+            webConfig.setLogo(webConfigVO.getLogo());
+            webConfig.setName(webConfigVO.getName());
+            webConfig.setTitle(webConfigVO.getTitle());
+            webConfig.setSummary(webConfigVO.getSummary());
+            webConfig.setKeyword(webConfigVO.getKeyword());
+            webConfig.setAuthor(webConfigVO.getAuthor());
+            webConfig.setRecordNum(webConfigVO.getRecordNum());
+            webConfig.setAliPay(webConfigVO.getAliPay());
+            webConfig.setWeixinPay(webConfigVO.getWeixinPay());
+            webConfig.setStartComment(webConfigVO.getStartComment());
+
+            // 设置关注我们
+            webConfig.setEmail(webConfigVO.getEmail());
+            webConfig.setQqNumber(webConfigVO.getQqNumber());
+            webConfig.setQqGroup(webConfigVO.getQqGroup());
+            webConfig.setGithub(webConfigVO.getGithub());
+            webConfig.setGitee(webConfigVO.getGitee());
+            webConfig.setWeChat(webConfigVO.getWeChat());
+            webConfig.setShowList(webConfigVO.getShowList());
+            webConfig.setLoginTypeList(webConfigVO.getLoginTypeList());
+            webConfig.setUpdateTime(new Date());
+            webConfigService.save(webConfig);
+        } else {
+            WebConfig webConfig = webConfigService.getById(webConfigVO.getUid());
+            webConfig.setLogo(webConfigVO.getLogo());
+            webConfig.setName(webConfigVO.getName());
+            webConfig.setTitle(webConfigVO.getTitle());
+            webConfig.setSummary(webConfigVO.getSummary());
+            webConfig.setKeyword(webConfigVO.getKeyword());
+            webConfig.setAuthor(webConfigVO.getAuthor());
+            webConfig.setRecordNum(webConfigVO.getRecordNum());
+            webConfig.setAliPay(webConfigVO.getAliPay());
+            webConfig.setWeixinPay(webConfigVO.getWeixinPay());
+            webConfig.setStartComment(webConfigVO.getStartComment());
+
+            // 设置关注我们
+            webConfig.setEmail(webConfigVO.getEmail());
+            webConfig.setQqNumber(webConfigVO.getQqNumber());
+            webConfig.setQqGroup(webConfigVO.getQqGroup());
+            webConfig.setGithub(webConfigVO.getGithub());
+            webConfig.setGitee(webConfigVO.getGitee());
+            webConfig.setWeChat(webConfigVO.getWeChat());
+            webConfig.setShowList(webConfigVO.getShowList());
+            webConfig.setLoginTypeList(webConfigVO.getLoginTypeList());
+            webConfig.setUpdateTime(new Date());
+            webConfigService.updateById(webConfig);
+        }
+        return ResultUtil.result(SysConf.SUCCESS, MessageConf.UPDATE_SUCCESS);
     }
 }

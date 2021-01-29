@@ -1,15 +1,14 @@
 package com.ginkgoblog.admin.log;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.serializer.SerializerFeature;
-import com.ginkgoblog.base.constants.RedisConstants;
+import com.ginkgoblog.admin.constants.SysConf;
+import com.ginkgoblog.base.constants.BaseSysConf;
 import com.ginkgoblog.base.holder.RequestHolder;
 import com.ginkgoblog.base.utils.RequestUtil;
 import com.ginkgoblog.commons.entity.ExceptionLog;
-import com.ginkgoblog.utils.AopUtils;
-import com.ginkgoblog.utils.AspectUtils;
-import com.ginkgoblog.utils.IpUtils;
-import com.ginkgoblog.utils.StringUtils;
+import com.ginkgoblog.utils.*;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -39,9 +38,10 @@ import java.util.concurrent.TimeUnit;
 public class LoggerAspect {
 
     @Autowired
-    private SysLogHandle sysLogHandle;
+    private RedisUtil redisUtil;
+
     @Autowired
-    private StringRedisTemplate redisTemplate;
+    private SysLogHandle sysLogHandle;
 
     /**
      * 开始时间
@@ -80,16 +80,15 @@ public class LoggerAspect {
         HttpServletRequest request = RequestHolder.getRequest();
         String ip = IpUtils.getIpAddr(request);
         exception.setIp(ip);
-        String operationName = AspectUtils.INSTANCE.parseParams(joinPoint.getArgs(), operationLogger.value());
+        String operationName = AspectUtil.INSTANCE.parseParams(joinPoint.getArgs(), operationLogger.value());
 
         //从Redis中获取IP来源
-        String jsonResult = redisTemplate.opsForValue().get(
-                RedisConstants.IP_SOURCE + RedisConstants.SEGMENTATION + ip);
+        String jsonResult = redisUtil.get(SysConf.IP_SOURCE + BaseSysConf.REDIS_SEGMENTATION + ip);
         if (StringUtils.isEmpty(jsonResult)) {
-            String addresses = IpUtils.getAddresses(RedisConstants.IP + RedisConstants.EQUAL_TO + ip, RedisConstants.UTF_8);
+            String addresses = IpUtils.getAddresses(SysConf.IP + SysConf.EQUAL_TO + ip, SysConf.UTF_8);
             if (StringUtils.isNotEmpty(addresses)) {
                 exception.setIpSource(addresses);
-                redisTemplate.opsForValue().set(RedisConstants.IP_SOURCE + RedisConstants.SEGMENTATION + ip, addresses, 24, TimeUnit.HOURS);
+                redisUtil.setEx(SysConf.IP_SOURCE + BaseSysConf.REDIS_SEGMENTATION + ip, addresses, 24, TimeUnit.HOURS);
             }
         } else {
             exception.setIpSource(jsonResult);
@@ -123,14 +122,15 @@ public class LoggerAspect {
     private void handle(ProceedingJoinPoint point) throws Exception {
 
         HttpServletRequest request = RequestHolder.getRequest();
-        Method currentMethod = AspectUtils.INSTANCE.getMethod(point);
+
+        Method currentMethod = AspectUtil.INSTANCE.getMethod(point);
 
         //获取操作名称
         OperationLogger annotation = currentMethod.getAnnotation(OperationLogger.class);
 
         boolean save = annotation.save();
 
-        String bussinessName = AspectUtils.INSTANCE.parseParams(point.getArgs(), annotation.value());
+        String bussinessName = AspectUtil.INSTANCE.parseParams(point.getArgs(), annotation.value());
 
         String ua = RequestUtil.getUa();
 
@@ -141,10 +141,12 @@ public class LoggerAspect {
 
         // 获取参数名称和值
         Map<String, Object> nameAndArgsMap = AopUtils.getFieldsName(point);
-        String paramsJson = JSON.toJSONString(nameAndArgsMap);
+
+        String paramsJson = JSONObject.toJSONString(nameAndArgsMap);
 
         // 异步存储日志
         sysLogHandle.setSysLogHandle(paramsJson, point.getTarget().getClass().getName(), point.getSignature().getName(), bussinessName, startTime);
+
         sysLogHandle.onRun();
     }
 }

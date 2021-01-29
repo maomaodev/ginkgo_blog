@@ -4,8 +4,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.IService;
 import com.ginkgoblog.commons.entity.Blog;
+import com.ginkgoblog.commons.vo.BlogVO;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 博客表 Service 层
@@ -48,14 +52,12 @@ public interface BlogService extends IService<Blog> {
     Blog setSortByBlog(Blog blog);
 
     /**
-     * 通过标签搜索博客
+     * 通过推荐等级获取博客列表
      *
-     * @param tagUid
-     * @param currentPage
-     * @param pageSize
+     * @param level
      * @return
      */
-    IPage<Blog> searchBlogByTag(String tagUid, Long currentPage, Long pageSize);
+    List<Blog> getBlogListByLevel(Integer level);
 
     /**
      * 通过推荐等级获取博客Page，是否排序
@@ -66,6 +68,118 @@ public interface BlogService extends IService<Blog> {
     IPage<Blog> getBlogPageByLevel(Page<Blog> page, Integer level, Integer useSort);
 
     /**
+     * 通过状态获取博客数量
+     *
+     * @author xzx19950624@qq.com
+     * @date 2018年10月22日下午3:30:28
+     */
+    Integer getBlogCount(Integer status);
+
+    /**
+     * 通过标签获取博客数目
+     *
+     * @author Administrator
+     * @date 2019年6月19日16:28:16
+     */
+    List<Map<String, Object>> getBlogCountByTag();
+
+    /**
+     * 通过标签获取博客数目
+     *
+     * @author Administrator
+     * @date 2019年11月27日13:14:34
+     */
+    List<Map<String, Object>> getBlogCountByBlogSort();
+
+    /**
+     * 获取一年内的文章贡献数
+     *
+     * @return
+     */
+    Map<String, Object> getBlogContributeCount();
+
+    /**
+     * 通过uid获取博客内容
+     *
+     * @param uid
+     * @return
+     */
+    Blog getBlogByUid(String uid);
+
+    /**
+     * 根据BlogUid获取相关的博客
+     *
+     * @param blogUid
+     * @return
+     */
+    List<Blog> getSameBlogByBlogUid(String blogUid);
+
+    /**
+     * 获取点击量前top的博客列表
+     *
+     * @param top
+     * @return
+     */
+    List<Blog> getBlogListByTop(Integer top);
+
+    /**
+     * 获取博客列表
+     *
+     * @param blogVO
+     * @return
+     */
+    IPage<Blog> getPageList(BlogVO blogVO);
+
+    /**
+     * 新增博客
+     *
+     * @param blogVO
+     */
+    String addBlog(BlogVO blogVO);
+
+    /**
+     * 编辑博客
+     *
+     * @param blogVO
+     */
+    String editBlog(BlogVO blogVO);
+
+    /**
+     * 推荐博客排序调整
+     *
+     * @param blogVOList
+     * @return
+     */
+    String editBatch(List<BlogVO> blogVOList);
+
+    /**
+     * 批量删除博客
+     *
+     * @param blogVO
+     */
+    String deleteBlog(BlogVO blogVO);
+
+    /**
+     * 批量删除博客
+     *
+     * @param blogVoList
+     * @return
+     */
+    String deleteBatchBlog(List<BlogVO> blogVoList);
+
+    /**
+     * 本地博客上传
+     *
+     * @param filedatas
+     * @return
+     */
+    String uploadLocalBlog(List<MultipartFile> filedatas) throws IOException;
+
+    /**
+     *  web端使用的接口
+     */
+
+    /**
      * 通过推荐等级获取博客Page
      *
      * @param level       推荐级别
@@ -73,7 +187,7 @@ public interface BlogService extends IService<Blog> {
      * @param useSort     是否使用排序字段
      * @return
      */
-    IPage<Blog> getBlogPageByLevel(Integer level, Long currentPage, Integer useSort);
+     IPage<Blog> getBlogPageByLevel(Integer level, Long currentPage, Integer useSort);
 
     /**
      * 获取首页排行博客
@@ -102,29 +216,6 @@ public interface BlogService extends IService<Blog> {
     IPage<Blog> getBlogByTime(Long currentPage, Long pageSize);
 
     /**
-     * 根据BlogUid获取相关的博客
-     *
-     * @param blogUid
-     * @return
-     */
-    List<Blog> getSameBlogByBlogUid(String blogUid);
-
-    /**
-     * 获取博客的归档日期
-     *
-     * @return
-     */
-    String getBlogTimeSortList();
-
-    /**
-     * 通过月份获取日期
-     *
-     * @param monthDate
-     * @return
-     */
-    String getArticleByMonth(String monthDate);
-
-    /**
      * 通过博客Uid获取点赞数
      *
      * @param uid
@@ -138,7 +229,7 @@ public interface BlogService extends IService<Blog> {
      * @param uid
      * @return
      */
-     String praiseBlogByUid(String uid);
+    String praiseBlogByUid(String uid);
 
     /**
      * 根据标签Uid获取相关的博客
@@ -158,4 +249,59 @@ public interface BlogService extends IService<Blog> {
      */
     IPage<Blog> getListByBlogSortUid(String blogSortUid, Long currentPage, Long pageSize);
 
+    /**
+     * 通过关键字搜索博客列表
+     *
+     * @param keywords
+     * @param currentPage
+     * @param pageSize
+     * @return
+     */
+    Map<String, Object> getBlogByKeyword(String keywords, Long currentPage, Long pageSize);
+
+    /**
+     * 通过标签搜索博客
+     *
+     * @param tagUid
+     * @param currentPage
+     * @param pageSize
+     * @return
+     */
+     IPage<Blog> searchBlogByTag(String tagUid, Long currentPage, Long pageSize);
+
+    /**
+     * 通过博客分类搜索博客
+     *
+     * @param blogSortUid
+     * @param currentPage
+     * @param pageSize
+     * @return
+     */
+    IPage<Blog> searchBlogByBlogSort(String blogSortUid, Long currentPage, Long pageSize);
+
+    /**
+     * 通过作者搜索博客
+     *
+     * @param author
+     * @param currentPage
+     * @param pageSize
+     * @return
+     */
+    IPage<Blog> searchBlogByAuthor(String author, Long currentPage, Long pageSize);
+
+
+    /**
+     * 获取博客的归档日期
+     *
+     * @return
+     */
+    String getBlogTimeSortList();
+
+    /**
+     * 通过月份获取日期
+     *
+     * @param monthDate
+     * @return
+     */
+    String getArticleByMonth(String monthDate);
 }

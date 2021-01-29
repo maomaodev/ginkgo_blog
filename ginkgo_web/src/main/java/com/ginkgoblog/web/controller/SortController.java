@@ -2,7 +2,7 @@ package com.ginkgoblog.web.controller;
 
 import com.ginkgoblog.base.enums.EBehavior;
 import com.ginkgoblog.commons.service.BlogService;
-import com.ginkgoblog.web.log.OperationLog;
+import com.ginkgoblog.web.log.BussinessLog;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -34,7 +34,7 @@ public class SortController {
         return blogService.getBlogTimeSortList();
     }
 
-    @OperationLog(value = "点击归档", behavior = EBehavior.VISIT_SORT)
+    @BussinessLog(value = "点击归档", behavior = EBehavior.VISIT_SORT)
     @ApiOperation("通过月份获取文章")
     @GetMapping("/getArticleByMonth")
     public String getArticleByMonth(@ApiParam(name = "monthDate", value = "归档的日期")

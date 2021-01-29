@@ -5,6 +5,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.ginkgoblog.commons.entity.User;
 import com.ginkgoblog.commons.vo.UserVO;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.List;
 
 /**
@@ -15,59 +16,73 @@ import java.util.List;
  */
 public interface UserService extends IService<User> {
     /**
-     * 通过用户来源和id获取用户
+     * 记录用户信息
      *
-     * @param source 用户来源
-     * @param uuid   平台uuid
-     * @return 用户
+     * @param response
      */
-    User getUserBySourceAndUuid(String source, String uuid);
+    User insertUserInfo(HttpServletRequest request, String response);
+
+    /**
+     * 通过source uuid获取用户类
+     *
+     * @param source
+     * @param uuid
+     * @return
+     */
+    User getUserBySourceAnduuid(String source, String uuid);
 
     /**
      * 获取用户数
      *
-     * @param status 状态
-     * @return 用户数
+     * @param status
+     * @return
      */
     Integer getUserCount(int status);
 
     /**
-     * 设置请求相关，如浏览器，IP，IP来源等
+     * 设置Request相关，如浏览器，IP，IP来源
      *
-     * @param user 用户信息
-     * @return 用户
+     * @param user
+     * @return
      */
-    User setRequestInfo(User user);
+    User serRequestInfo(User user);
 
     /**
-     * 获取用户分页列表
+     * 通过ids获取用户列表
      *
-     * @param userVO 用户表现层对象
-     * @return 用户分页列表
+     * @param ids
+     * @return
+     */
+    List<User> getUserListByIds(List<String> ids);
+
+    /**
+     * 获取用户列表
+     *
+     * @param userVO
+     * @return
      */
     IPage<User> getPageList(UserVO userVO);
+
 
     /**
      * 编辑用户
      *
-     * @param userVO 用户表现层对象
-     * @return 处理信息
+     * @param userVO
      */
     String editUser(UserVO userVO);
 
     /**
-     * 重置用户密码
-     *
-     * @param userVO 用户表现层对象
-     * @return 处理信息
-     */
-    String resetUserPassword(UserVO userVO);
-
-    /**
      * 删除用户
      *
-     * @param userVO 用户表现层对象
-     * @return 处理信息
+     * @param userVO
      */
     String deleteUser(UserVO userVO);
+
+    /**
+     * 重置用户密码
+     *
+     * @param userVO
+     * @return
+     */
+    String resetUserPassword(UserVO userVO);
 }

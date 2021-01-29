@@ -20,9 +20,9 @@ public interface FileService extends IService<File> {
      *
      * @param path        上次路径
      * @param request     HttpServletRequest
-     * @param files       文件数组
+     * @param filedatas   文件数组
      * @param qiNiuConfig 七牛云配置
      * @return 处理信息
      */
-    String uploadImages(String path, HttpServletRequest request, List<MultipartFile> files, Map<String, String> qiNiuConfig);
+    String uploadImages(String path, HttpServletRequest request, List<MultipartFile> filedatas, Map<String, String> qiNiuConfig);
 }
