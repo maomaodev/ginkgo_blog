@@ -607,7 +607,6 @@ public class CommentController {
         return ResultUtil.result(SysConf.SUCCESS, MessageConf.OPERATION_SUCCESS);
     }
 
-
     /**
      * 获取评论所有回复
      *
