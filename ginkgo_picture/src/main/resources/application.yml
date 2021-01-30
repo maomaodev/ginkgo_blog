@@ -8,11 +8,36 @@ file:
 spring:
   application:
     name: ginkgo-picture
-    security:
-      user:
-        name: user
-        password: 123456
+  security:
+    user:
+      name: user
+      password: password123
   datasource:
     url: jdbc:mysql://localhost:3306/ginkgo_picture?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=UTC
     username: root
     password: root
+  servlet:
+    multipart:
+      enabled: true
+      max-file-size: 100MB # 修改单次文件上传文件大小不能超过100MB
+      max-request-size: 500MB # 设置单次文件请求总大小不能超过500MB
+  #redis
+  redis:
+    host: 127.0.0.1 #redis的主机ip
+    port: 6379
+
+
+
+eureka:
+  client:
+#    healthcheck:
+#      enabled: true
+    registerWithEureka: true
+    fetchRegistry: true
+    serviceUrl:
+      defaultZone: http://${spring.security.user.name}:${spring.security.user.password}@localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${spring.application.instance_id:${server.port}}
+    lease-renewal-interval-in-seconds: 5
+    appname: ginkgo-picture

@@ -1,7 +1,7 @@
 package com.ginkgoblog.base.enums;
 
-import com.alibaba.fastjson.JSON;
-import com.ginkgoblog.base.constants.SqlConstants;
+import com.ginkgoblog.base.constants.BaseSysConf;
+import com.ginkgoblog.utils.JsonUtils;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -30,6 +30,7 @@ public enum EBehavior {
     VISIT_CLASSIFY("点击博客分类页面", "visit_classify"),
     VISIT_TAG("点击博客标签页面", "visit_tag");
 
+
     private String content;
     private String behavior;
 
@@ -38,78 +39,93 @@ public enum EBehavior {
         this.behavior = behavior;
     }
 
+    /**
+     * 根据value返回枚举类型，主要在switch中使用
+     *
+     * @param value
+     * @return
+     */
+    public static EBehavior getByValue(String value) {
+        for (EBehavior behavior : values()) {
+            if (behavior.getBehavior() == value) {
+                return behavior;
+            }
+        }
+        return null;
+    }
+
     public static Map<String, String> getModuleAndOtherData(EBehavior behavior, Map<String, Object> nameAndArgsMap, String bussinessName) {
         String otherData = "";
         String moduleUid = "";
         switch (behavior) {
             case BLOG_AUTHOR: {
                 // 判断是否是点击作者
-                if (nameAndArgsMap.get(SqlConstants.AUTHOR) != null) {
-                    otherData = nameAndArgsMap.get(SqlConstants.AUTHOR).toString();
+                if (nameAndArgsMap.get(BaseSysConf.AUTHOR) != null) {
+                    otherData = nameAndArgsMap.get(BaseSysConf.AUTHOR).toString();
                 }
             }
             ;
             break;
             case BLOG_SORT: {
                 // 判断是否点击博客分类
-                if (nameAndArgsMap.get(SqlConstants.BLOG_SORT_UID) != null) {
-                    moduleUid = nameAndArgsMap.get(SqlConstants.BLOG_SORT_UID).toString();
+                if (nameAndArgsMap.get(BaseSysConf.BLOG_SORT_UID) != null) {
+                    moduleUid = nameAndArgsMap.get(BaseSysConf.BLOG_SORT_UID).toString();
                 }
             }
             ;
             break;
             case BLOG_TAG: {
                 // 判断是否点击博客标签
-                if (nameAndArgsMap.get(SqlConstants.TAG_UID) != null) {
-                    moduleUid = nameAndArgsMap.get(SqlConstants.TAG_UID).toString();
+                if (nameAndArgsMap.get(BaseSysConf.TAG_UID) != null) {
+                    moduleUid = nameAndArgsMap.get(BaseSysConf.TAG_UID).toString();
                 }
             }
             ;
             break;
             case BLOG_SEARCH: {
                 // 判断是否进行搜索
-                if (nameAndArgsMap.get(SqlConstants.KEYWORDS) != null) {
-                    otherData = nameAndArgsMap.get(SqlConstants.KEYWORDS).toString();
+                if (nameAndArgsMap.get(BaseSysConf.KEYWORDS) != null) {
+                    otherData = nameAndArgsMap.get(BaseSysConf.KEYWORDS).toString();
                 }
             }
             ;
             break;
             case VISIT_CLASSIFY: {
                 // 判断是否点击分类
-                if (nameAndArgsMap.get(SqlConstants.BLOG_SORT_UID) != null) {
-                    moduleUid = nameAndArgsMap.get(SqlConstants.BLOG_SORT_UID).toString();
+                if (nameAndArgsMap.get(BaseSysConf.BLOG_SORT_UID) != null) {
+                    moduleUid = nameAndArgsMap.get(BaseSysConf.BLOG_SORT_UID).toString();
                 }
             }
             ;
             break;
             case VISIT_SORT: {
                 // 判断是否点击归档
-                if (nameAndArgsMap.get(SqlConstants.MONTH_DATE) != null) {
-                    otherData = nameAndArgsMap.get(SqlConstants.MONTH_DATE).toString();
+                if (nameAndArgsMap.get(BaseSysConf.MONTH_DATE) != null) {
+                    otherData = nameAndArgsMap.get(BaseSysConf.MONTH_DATE).toString();
                 }
             }
             ;
             break;
             case BLOG_CONTENT: {
                 // 判断是否博客详情
-                if (nameAndArgsMap.get(SqlConstants.UID) != null) {
-                    moduleUid = nameAndArgsMap.get(SqlConstants.UID).toString();
+                if (nameAndArgsMap.get(BaseSysConf.UID) != null) {
+                    moduleUid = nameAndArgsMap.get(BaseSysConf.UID).toString();
                 }
             }
             ;
             break;
             case BLOG_PRAISE: {
                 // 判断是否给博客点赞
-                if (nameAndArgsMap.get(SqlConstants.UID) != null) {
-                    moduleUid = nameAndArgsMap.get(SqlConstants.UID).toString();
+                if (nameAndArgsMap.get(BaseSysConf.UID) != null) {
+                    moduleUid = nameAndArgsMap.get(BaseSysConf.UID).toString();
                 }
             }
             ;
             break;
             case FRIENDSHIP_LINK: {
                 // 判断是否点击友链
-                if (nameAndArgsMap.get(SqlConstants.UID) != null) {
-                    moduleUid = nameAndArgsMap.get(SqlConstants.UID).toString();
+                if (nameAndArgsMap.get(BaseSysConf.UID) != null) {
+                    moduleUid = nameAndArgsMap.get(BaseSysConf.UID).toString();
                 }
                 otherData = bussinessName;
             }
@@ -117,8 +133,8 @@ public enum EBehavior {
             break;
             case VISIT_PAGE: {
                 // 访问页面
-                if (nameAndArgsMap.get(SqlConstants.PAGE_NAME) != null) {
-                    otherData = nameAndArgsMap.get(SqlConstants.PAGE_NAME).toString();
+                if (nameAndArgsMap.get(BaseSysConf.PAGE_NAME) != null) {
+                    otherData = nameAndArgsMap.get(BaseSysConf.PAGE_NAME).toString();
                 } else {
                     otherData = bussinessName;
                 }
@@ -126,40 +142,38 @@ public enum EBehavior {
             ;
             break;
             case PUBLISH_COMMENT: {
-                Object object = nameAndArgsMap.get(SqlConstants.COMMENT_VO);
-                Map<String, Object> map = (Map<String, Object>) JSON.parse(JSON.toJSONString(object));
-                if (map.get(SqlConstants.CONTENT) != null) {
-                    otherData = map.get(SqlConstants.CONTENT).toString();
+                Object object = nameAndArgsMap.get(BaseSysConf.COMMENT_VO);
+                Map<String, Object> map = JsonUtils.objectToMap(object);
+                if (map.get(BaseSysConf.CONTENT) != null) {
+                    otherData = map.get(BaseSysConf.CONTENT).toString();
                 }
             }
             ;
             break;
             case REPORT_COMMENT: {
                 // 举报评论
-                Object object = nameAndArgsMap.get(SqlConstants.COMMENT_VO);
-                Map<String, Object> map = (Map<String, Object>) JSON.parse(JSON.toJSONString(object));
-                if (map.get(SqlConstants.CONTENT) != null) {
-                    otherData = map.get(SqlConstants.CONTENT).toString();
+                Object object = nameAndArgsMap.get(BaseSysConf.COMMENT_VO);
+                Map<String, Object> map = JsonUtils.objectToMap(object);
+                if (map.get(BaseSysConf.CONTENT) != null) {
+                    otherData = map.get(BaseSysConf.CONTENT).toString();
                 }
             }
             ;
             break;
             case DELETE_COMMENT: {
                 // 删除评论
-                Object object = nameAndArgsMap.get(SqlConstants.COMMENT_VO);
-                Map<String, Object> map = (Map<String, Object>) JSON.parse(JSON.toJSONString(object));
-                if (map.get(SqlConstants.CONTENT) != null) {
-                    otherData = map.get(SqlConstants.CONTENT).toString();
+                Object object = nameAndArgsMap.get(BaseSysConf.COMMENT_VO);
+                Map<String, Object> map = JsonUtils.objectToMap(object);
+                if (map.get(BaseSysConf.CONTENT) != null) {
+                    otherData = map.get(BaseSysConf.CONTENT).toString();
                 }
             }
             ;
             break;
-            default:
-                break;
         }
         Map<String, String> result = new HashMap<>();
-        result.put(SqlConstants.MODULE_UID, moduleUid);
-        result.put(SqlConstants.OTHER_DATA, otherData);
+        result.put(BaseSysConf.MODULE_UID, moduleUid);
+        result.put(BaseSysConf.OTHER_DATA, otherData);
         return result;
     }
 
@@ -178,4 +192,6 @@ public enum EBehavior {
     public void setBehavior(String behavior) {
         this.behavior = behavior;
     }
+
+
 }

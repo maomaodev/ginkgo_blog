@@ -3,13 +3,13 @@ server:
 
 spring:
   jmx:
-    default-domain: mogu_eureka
+    default-domain: ginkgo_eureka
   application:
-    name: mogu-eureka
+    name: ginkgo-eureka
   security:
     user:
       name: user
-      password: 123456
+      password: password123
 
 eureka:
   server:
@@ -23,5 +23,4 @@ eureka:
     fetchRegistry: false
     serviceUrl:
       # 设置与Eureka交互的地址查询服务和注册服务都需要依赖这个地址
-
       defaultZone: http://${spring.security.user.name}:${spring.security.user.password}@localhost:8761/eureka/

@@ -8,7 +8,10 @@ accessKeySecret: XXXXXXXXXXXXXXXXXXXXXXX #修改成自己的
 spring:
   application:
     name: ginkgo-sms
-
+  security:
+    user:
+      name: user
+      password: password123
 
   rabbitmq:
     host: 127.0.0.1 #rabbitmq的主机ip
@@ -32,3 +35,14 @@ spring:
           auth: true
           starttls:
             enable: false
+
+eureka:
+  client:
+#    healthcheck:
+#      enabled: true
+    serviceUrl:
+      defaultZone: http://${spring.security.user.name}:${spring.security.user.password}@localhost:8761/eureka/
+  instance:
+    prefer-ip-address: true
+    instance-id: ${spring.application.name}:${spring.cloud.client.ip-address}:${spring.application.instance_id:${server.port}}
+    lease-renewal-interval-in-seconds: 5
