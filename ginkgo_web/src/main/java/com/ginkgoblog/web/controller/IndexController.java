@@ -10,6 +10,7 @@ import com.ginkgoblog.utils.StringUtils;
 import com.ginkgoblog.web.constants.MessageConf;
 import com.ginkgoblog.web.constants.SysConf;
 import com.ginkgoblog.web.log.BussinessLog;
+import com.ginkgoblog.web.requestLimit.RequestLimit;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.annotations.ApiParam;
@@ -31,7 +32,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @RestController
 @RequestMapping("/index")
-@Api("首页相关接口")
+@Api(value = "首页相关接口", tags = {"首页相关接口"})
 @Slf4j
 public class IndexController {
 
@@ -51,6 +52,7 @@ public class IndexController {
     @Value(value = "${BLOG.NEW_COUNT}")
     private Long BLOG_NEW_COUNT;
 
+    @RequestLimit(amount = 200, time = 60000)
     @ApiOperation(value = "通过推荐等级获取博客列表", notes = "通过推荐等级获取博客列表")
     @GetMapping("/getBlogByLevel")
     public String getBlogByLevel(HttpServletRequest request,

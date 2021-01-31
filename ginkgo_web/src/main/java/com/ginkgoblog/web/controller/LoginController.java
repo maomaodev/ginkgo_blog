@@ -2,7 +2,10 @@ package com.ginkgoblog.web.controller;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.ginkgoblog.base.enums.EStatus;
+import com.ginkgoblog.base.exception.ThrowableUtils;
 import com.ginkgoblog.base.holder.RequestHolder;
+import com.ginkgoblog.base.validator.group.GetOne;
+import com.ginkgoblog.base.validator.group.Insert;
 import com.ginkgoblog.commons.entity.User;
 import com.ginkgoblog.commons.feign.PictureFeignClient;
 import com.ginkgoblog.commons.service.UserService;
@@ -20,6 +23,8 @@ import io.swagger.annotations.ApiParam;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -36,7 +41,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RestController
 @RequestMapping("/login")
-@Api("用户登录管理相关接口")
+@Api(value = "登录管理相关接口", tags = {"loginRestApi"})
 @Slf4j
 public class LoginController {
 
@@ -55,7 +60,8 @@ public class LoginController {
 
     @ApiOperation(value = "用户登录", notes = "用户登录")
     @PostMapping("/login")
-    public String login(@RequestBody UserVO userVO) {
+    public String login(@Validated({GetOne.class}) @RequestBody UserVO userVO, BindingResult result) {
+        ThrowableUtils.checkParamArgument(result);
         String userName = userVO.getUserName();
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();
         queryWrapper.and(wrapper -> wrapper.eq(SQLConf.USER_NAME, userName).or().eq(SQLConf.EMAIL, userName));
@@ -103,7 +109,8 @@ public class LoginController {
 
     @ApiOperation(value = "用户注册", notes = "用户注册")
     @PostMapping("/register")
-    public String register(@RequestBody UserVO userVO) {
+    public String register(@Validated({Insert.class}) @RequestBody UserVO userVO, BindingResult result) {
+        ThrowableUtils.checkParamArgument(result);
         if(userVO.getUserName().length() < 5 || userVO.getUserName().length() >= 20 || userVO.getPassWord().length() < 5 || userVO.getPassWord().length() >= 20) {
             return ResultUtil.result(SysConf.ERROR, MessageConf.PARAM_INCORRECT);
         }

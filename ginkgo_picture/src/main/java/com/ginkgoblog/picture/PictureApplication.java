@@ -25,7 +25,9 @@ import springfox.documentation.swagger2.annotations.EnableSwagger2;
         "com.ginkgoblog.picture.service",
         "com.ginkgoblog.picture.controller",
         "com.ginkgoblog.picture.utils",
-        "com.ginkgoblog.commons.config"
+        "com.ginkgoblog.commons.config.feign",
+        "com.ginkgoblog.commons.config.redis",
+        "com.ginkgoblog.utils"
 })
 public class PictureApplication {
     public static void main(String[] args) {

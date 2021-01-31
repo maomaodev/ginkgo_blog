@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @RestController
 @RequestMapping("/classify")
-@Api("分类相关接口")
+@Api(value = "分类相关接口", tags = {"分类相关接口"})
 @Slf4j
 public class ClassifyController {
 

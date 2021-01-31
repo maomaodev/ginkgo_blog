@@ -8,6 +8,8 @@ import com.ginkgoblog.base.enums.EGender;
 import com.ginkgoblog.base.enums.ELinkStatus;
 import com.ginkgoblog.base.enums.EOpenStatus;
 import com.ginkgoblog.base.enums.EStatus;
+import com.ginkgoblog.base.exception.ThrowableUtils;
+import com.ginkgoblog.base.validator.group.Insert;
 import com.ginkgoblog.commons.entity.Feedback;
 import com.ginkgoblog.commons.entity.Link;
 import com.ginkgoblog.commons.entity.SysConfig;
@@ -47,6 +49,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.validation.BindingResult;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -63,7 +66,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RestController
 @RequestMapping("/oauth")
-@Api("第三方登录相关接口")
+@Api(value = "第三方登录相关接口", tags = {"第三方登录相关接口"})
 @Slf4j
 public class AuthController {
     @Autowired
@@ -169,9 +172,9 @@ public class AuthController {
         // 判断用户性别
         if (data.get(SysConf.GENDER) != null) {
             Object gender = data.get(SysConf.GENDER).toString();
-            if (SysConf.MALE.equals(gender)) {
+            if(SysConf.MALE.equals(gender)) {
                 user.setGender(EGender.MALE);
-            } else if (SysConf.FEMALE.equals(gender)) {
+            } else if(SysConf.FEMALE.equals(gender)) {
                 user.setGender(EGender.FEMALE);
             } else {
                 user.setGender(EGender.UNKNOWN);
@@ -397,8 +400,8 @@ public class AuthController {
 
     @ApiOperation(value = "更新用户密码", notes = "更新用户密码")
     @PostMapping("/updateUserPwd")
-    public String updateUserPwd(HttpServletRequest request, @RequestParam(value = "oldPwd") String oldPwd, @RequestParam("newPwd") String newPwd) {
-        if (StringUtils.isEmpty(oldPwd) || StringUtils.isEmpty(oldPwd)) {
+    public String updateUserPwd(HttpServletRequest request,@RequestParam(value = "oldPwd") String oldPwd,@RequestParam("newPwd") String newPwd) {
+        if(StringUtils.isEmpty(oldPwd) || StringUtils.isEmpty(oldPwd)) {
             return ResultUtil.result(SysConf.ERROR, MessageConf.PARAM_INCORRECT);
         }
         if (request.getAttribute(SysConf.USER_UID) == null || request.getAttribute(SysConf.TOKEN) == null) {
@@ -407,11 +410,11 @@ public class AuthController {
         String userUid = request.getAttribute(SysConf.USER_UID).toString();
         User user = userService.getById(userUid);
         // 判断是否是第三方登录的账号
-        if (!user.getSource().equals(SysConf.MOGU)) {
+        if(!user.getSource().equals(SysConf.MOGU)) {
             return ResultUtil.result(SysConf.ERROR, MessageConf.CANNOT_CHANGE_THE_PASSWORD_BY_USER);
         }
         // 判断旧密码是否一致
-        if (user.getPassWord().equals(MD5Utils.string2MD5(oldPwd))) {
+        if(user.getPassWord().equals(MD5Utils.string2MD5(oldPwd))) {
             user.setPassWord(MD5Utils.string2MD5(newPwd));
             user.updateById();
             return ResultUtil.result(SysConf.SUCCESS, MessageConf.OPERATION_SUCCESS);
@@ -511,7 +514,10 @@ public class AuthController {
 
     @ApiOperation(value = "提交反馈", notes = "提交反馈", response = String.class)
     @PostMapping("/addFeedback")
-    public String edit(HttpServletRequest request, @RequestBody FeedbackVO feedbackVO, BindingResult result) {
+    public String edit(HttpServletRequest request, @Validated({Insert.class}) @RequestBody FeedbackVO feedbackVO, BindingResult result) {
+
+        // 参数校验
+        ThrowableUtils.checkParamArgument(result);
 
         if (request.getAttribute(SysConf.USER_UID) == null) {
             return ResultUtil.result(SysConf.ERROR, MessageConf.INVALID_TOKEN);
@@ -526,14 +532,14 @@ public class AuthController {
         }
 
         // 判断是否开启邮件通知
-        SysConfig sysConfig = sysConfigService.getConfig();
-        if (sysConfig != null && EOpenStatus.OPEN.equals(sysConfig.getStartEmailNotification())) {
-            if (StringUtils.isNotEmpty(sysConfig.getEmail())) {
+        SysConfig systemConfig = sysConfigService.getConfig();
+        if (systemConfig != null && EOpenStatus.OPEN.equals(systemConfig.getStartEmailNotification())) {
+            if (StringUtils.isNotEmpty(systemConfig.getEmail())) {
                 log.info("发送反馈邮件通知");
                 String feedback = "网站收到新的反馈: " + "<br />"
                         + "标题：" + feedbackVO.getTitle() + "<br />" + "<br />"
                         + "内容" + feedbackVO.getContent();
-                rabbitMqUtil.sendSimpleEmail(sysConfig.getEmail(), feedback);
+                rabbitMqUtil.sendSimpleEmail(systemConfig.getEmail(), feedback);
             } else {
                 log.error("网站没有配置通知接收的邮箱地址！");
             }

@@ -30,6 +30,7 @@ import java.util.TimeZone;
         "com.ginkgoblog.web.config",
         "com.ginkgoblog.web.controller",
         "com.ginkgoblog.web.log",
+        "com.ginkgoblog.web.requestLimit",
         "com.ginkgoblog.web.utils",
         "com.ginkgoblog.commons.config",
         "com.ginkgoblog.commons.service",

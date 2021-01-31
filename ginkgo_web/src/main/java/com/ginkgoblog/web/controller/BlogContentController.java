@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RestController
 @RequestMapping("/content")
-@Api("文章详情相关接口")
+@Api(value = "文章详情相关接口", tags = {"文章详情相关接口"})
 @Slf4j
 public class BlogContentController {
 
@@ -173,7 +173,7 @@ public class BlogContentController {
     private void setBlogCopyright(Blog blog) {
 
         //如果是原创的话
-        if ("1".equals(blog.getIsOriginal())) {
+        if (blog.getIsOriginal().equals("1")) {
             blog.setCopyright(ORIGINAL_TEMPLATE);
         } else {
             String reprintedTemplate = REPRINTED_TEMPLATE;

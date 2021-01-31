@@ -5,13 +5,12 @@ import cn.hutool.core.date.DateUtil;
 import com.ginkgoblog.admin.constants.SysConf;
 import com.ginkgoblog.base.constants.BaseSysConf;
 import com.ginkgoblog.base.holder.RequestHolder;
-import com.ginkgoblog.commons.config.SecurityUser;
+import com.ginkgoblog.commons.config.jwt.SecurityUser;
 import com.ginkgoblog.commons.entity.SysLog;
 import com.ginkgoblog.utils.IpUtils;
 import com.ginkgoblog.utils.RedisUtil;
 import com.ginkgoblog.utils.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 

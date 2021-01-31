@@ -5,7 +5,12 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.ginkgoblog.base.constants.BaseSysConf;
 import com.ginkgoblog.base.enums.*;
+import com.ginkgoblog.base.exception.ThrowableUtils;
 import com.ginkgoblog.base.holder.RequestHolder;
+import com.ginkgoblog.base.validator.group.Delete;
+import com.ginkgoblog.base.validator.group.GetList;
+import com.ginkgoblog.base.validator.group.GetOne;
+import com.ginkgoblog.base.validator.group.Insert;
 import com.ginkgoblog.commons.entity.*;
 import com.ginkgoblog.commons.feign.PictureFeignClient;
 import com.ginkgoblog.commons.service.*;
@@ -76,7 +81,9 @@ public class CommentController {
 
     @ApiOperation(value = "获取评论列表", notes = "获取评论列表")
     @PostMapping("/getList")
-    public String getList(HttpServletRequest request, @RequestBody CommentVO commentVO, BindingResult result) {
+    public String getList(HttpServletRequest request, @Validated({GetList.class}) @RequestBody CommentVO commentVO, BindingResult result) {
+
+        ThrowableUtils.checkParamArgument(result);
 
         QueryWrapper<Comment> queryWrapper = new QueryWrapper<>();
         if (StringUtils.isNotEmpty(commentVO.getBlogUid())) {
@@ -203,7 +210,7 @@ public class CommentController {
 
     @ApiOperation(value = "获取用户的评论列表和回复", notes = "获取评论列表和回复")
     @PostMapping("/getListByUser")
-    public String getListByUser(HttpServletRequest request, @RequestBody UserVO userVO) {
+    public String getListByUser(HttpServletRequest request, @Validated({GetList.class}) @RequestBody UserVO userVO) {
 
         if (request.getAttribute(SysConf.USER_UID) == null) {
             return ResultUtil.result(SysConf.ERROR, MessageConf.INVALID_TOKEN);
@@ -367,7 +374,8 @@ public class CommentController {
     @BussinessLog(value = "发表评论", behavior = EBehavior.PUBLISH_COMMENT)
     @ApiOperation(value = "增加评论", notes = "增加评论")
     @PostMapping("/add")
-    public String add(@RequestBody CommentVO commentVO) {
+    public String add(@Validated({Insert.class}) @RequestBody CommentVO commentVO, BindingResult result) {
+        ThrowableUtils.checkParamArgument(result);
         HttpServletRequest request = RequestHolder.getRequest();
 
         if (request.getAttribute(SysConf.USER_UID) == null) {
@@ -518,7 +526,9 @@ public class CommentController {
     @BussinessLog(value = "举报评论", behavior = EBehavior.REPORT_COMMENT)
     @ApiOperation(value = "举报评论", notes = "举报评论")
     @PostMapping("/report")
-    public String reportComment(@RequestBody CommentVO commentVO, BindingResult result) {
+    public String reportComment(HttpServletRequest request, @Validated({GetOne.class}) @RequestBody CommentVO commentVO, BindingResult result) {
+
+        ThrowableUtils.checkParamArgument(result);
 
         Comment comment = commentService.getById(commentVO.getUid());
 
@@ -558,6 +568,7 @@ public class CommentController {
     /**
      * 通过UID删除评论
      *
+     * @param request
      * @param commentVO
      * @param result
      * @return
@@ -565,7 +576,9 @@ public class CommentController {
     @BussinessLog(value = "删除评论", behavior = EBehavior.DELETE_COMMENT)
     @ApiOperation(value = "删除评论", notes = "删除评论")
     @PostMapping("/delete")
-    public String deleteBatch(@RequestBody CommentVO commentVO, BindingResult result) {
+    public String deleteBatch(HttpServletRequest request, @Validated({Delete.class}) @RequestBody CommentVO commentVO, BindingResult result) {
+
+        ThrowableUtils.checkParamArgument(result);
 
         Comment comment = commentService.getById(commentVO.getUid());
 
@@ -606,6 +619,7 @@ public class CommentController {
 
         return ResultUtil.result(SysConf.SUCCESS, MessageConf.OPERATION_SUCCESS);
     }
+
 
     /**
      * 获取评论所有回复

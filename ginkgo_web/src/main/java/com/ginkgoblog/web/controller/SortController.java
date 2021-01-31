@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/sort")
-@Api("博客归档相关接口")
+@Api(value = "博客归档相关接口", tags = {"博客归档相关接口"})
 @Slf4j
 public class SortController {
     @Autowired
     BlogService blogService;
 
-    @ApiOperation("归档")
+    @ApiOperation(value = "归档", notes = "归档")
     @GetMapping("/getSortList")
     public String getSortList() {
         log.info("获取归档日期");
@@ -35,10 +35,9 @@ public class SortController {
     }
 
     @BussinessLog(value = "点击归档", behavior = EBehavior.VISIT_SORT)
-    @ApiOperation("通过月份获取文章")
+    @ApiOperation(value = "通过月份获取文章", notes = "通过月份获取文章")
     @GetMapping("/getArticleByMonth")
-    public String getArticleByMonth(@ApiParam(name = "monthDate", value = "归档的日期")
-                                    @RequestParam(name = "monthDate", required = false) String monthDate) {
+    public String getArticleByMonth(@ApiParam(name = "monthDate", value = "归档的日期", required = false) @RequestParam(name = "monthDate", required = false) String monthDate) {
         log.info("通过月份获取文章列表");
         return blogService.getArticleByMonth(monthDate);
     }

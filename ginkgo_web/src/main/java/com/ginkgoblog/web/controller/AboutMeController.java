@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/about")
-@Api("关于我相关接口")
+@Api(value = "关于我相关接口", tags = {"关于我相关接口"})
 @Slf4j
 public class AboutMeController {
     @Autowired
@@ -32,14 +32,15 @@ public class AboutMeController {
     private WebConfigService webConfigService;
 
     @BussinessLog(value = "关于我", behavior = EBehavior.VISIT_PAGE)
-    @ApiOperation("关于我")
+    @ApiOperation(value = "关于我", notes = "关于我")
     @GetMapping("/getMe")
     public String getMe() {
+
         log.info("获取关于我的信息");
         return ResultUtil.result(SysConf.SUCCESS, adminService.getAdminByUser(SysConf.ADMIN));
     }
 
-    @ApiOperation("获取联系方式")
+    @ApiOperation(value = "获取联系方式", notes = "获取联系方式")
     @GetMapping("/getContact")
     public String getContact() {
         log.info("获取联系方式");

@@ -27,7 +27,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @RestController
 @RequestMapping("/tag")
-@Api("博客标签相关接口")
+@Api(value = "博客标签相关接口", tags = {"博客标签相关接口"})
 @Slf4j
 public class TagController {
     @Autowired
@@ -41,7 +41,6 @@ public class TagController {
         log.info("获取标签信息");
         return ResultUtil.result(SysConf.SUCCESS, tagService.getList());
     }
-
 
     @BussinessLog(value = "点击标签", behavior = EBehavior.VISIT_TAG)
     @ApiOperation(value = "通过TagUid获取文章", notes = "通过TagUid获取文章")
