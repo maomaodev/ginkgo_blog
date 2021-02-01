@@ -10,9 +10,9 @@
         <module name="ginkgo_base" />
         <module name="ginkgo_picture" />
         <module name="ginkgo_sms" />
-        <module name="ginkgo_commons" />
-        <module name="ginkgo_utils" />
         <module name="ginkgo_eureka" />
+        <module name="ginkgo_utils" />
+        <module name="ginkgo_commons" />
         <module name="ginkgo_web" />
         <module name="ginkgo_xo" />
       </profile>

@@ -266,6 +266,54 @@ CREATE TABLE `t_role` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='角色表';
 
 
+/*Table structure for table `t_sys_dict_data` */
+
+DROP TABLE IF EXISTS `t_sys_dict_data`;
+
+CREATE TABLE `t_sys_dict_data` (
+  `uid` char(32) NOT NULL COMMENT '主键',
+  `oid` int NOT NULL AUTO_INCREMENT COMMENT '自增键oid',
+  `dict_type_uid` char(32) DEFAULT NULL COMMENT '字典类型UID',
+  `dict_label` varchar(255) DEFAULT NULL COMMENT '字典标签',
+  `dict_value` varchar(255) DEFAULT NULL COMMENT '字典键值',
+  `css_class` varchar(255) DEFAULT NULL COMMENT '样式属性（其他样式扩展）',
+  `list_class` varchar(255) DEFAULT NULL COMMENT '表格回显样式',
+  `is_default` tinyint(1) DEFAULT '0' COMMENT '是否默认（1是 0否）,默认为0',
+  `create_by_uid` varchar(32) NOT NULL COMMENT '创建人UID',
+  `update_by_uid` varchar(32) NOT NULL COMMENT '最后更新人UID',
+  `remark` varchar(255) DEFAULT NULL COMMENT '备注',
+  `status` tinyint(1) DEFAULT '1' COMMENT '状态',
+  `create_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '创建时间',
+  `update_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '更新时间',
+  `is_publish` varchar(1) NOT NULL DEFAULT '1' COMMENT '是否发布(1:是，0:否)',
+  `sort` int NOT NULL DEFAULT '0' COMMENT '排序字段',
+  PRIMARY KEY (`uid`),
+  KEY `oid` (`oid`)
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8 COMMENT='字典数据表';
+
+
+/*Table structure for table `t_sys_dict_type` */
+
+DROP TABLE IF EXISTS `t_sys_dict_type`;
+
+CREATE TABLE `t_sys_dict_type` (
+  `uid` char(32) NOT NULL COMMENT '主键',
+  `oid` int NOT NULL AUTO_INCREMENT COMMENT '自增键oid',
+  `dict_name` varchar(255) DEFAULT NULL COMMENT '字典名称',
+  `dict_type` varchar(255) DEFAULT NULL COMMENT '字典类型',
+  `create_by_uid` varchar(32) NOT NULL COMMENT '创建人UID',
+  `update_by_uid` varchar(32) NOT NULL COMMENT '最后更新人UID',
+  `remark` varchar(255) DEFAULT NULL COMMENT '备注',
+  `status` tinyint(1) DEFAULT '1' COMMENT '状态',
+  `create_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '创建时间',
+  `update_time` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT '更新时间',
+  `is_publish` varchar(1) NOT NULL DEFAULT '1' COMMENT '是否发布(1:是，0:否)',
+  `sort` int NOT NULL DEFAULT '0' COMMENT '排序字段',
+  PRIMARY KEY (`uid`),
+  KEY `oid` (`oid`)
+) ENGINE=InnoDB AUTO_INCREMENT=23 DEFAULT CHARSET=utf8 COMMENT='字典类型表';
+
+
 /*Table structure for table `t_sys_log` */
 
 DROP TABLE IF EXISTS `t_sys_log`;
