@@ -23,6 +23,7 @@
         <module>ginkgo_picture</module>
         <module>ginkgo_eureka</module>
         <module>ginkgo_sms</module>
+        <module>ginkgo_search</module>
     </modules>
 
     <properties>

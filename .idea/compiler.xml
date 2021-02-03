@@ -8,11 +8,12 @@
         <outputRelativeToContentRoot value="true" />
         <module name="ginkgo_admin" />
         <module name="ginkgo_base" />
+        <module name="ginkgo_search" />
         <module name="ginkgo_picture" />
         <module name="ginkgo_sms" />
-        <module name="ginkgo_eureka" />
-        <module name="ginkgo_utils" />
         <module name="ginkgo_commons" />
+        <module name="ginkgo_utils" />
+        <module name="ginkgo_eureka" />
         <module name="ginkgo_web" />
         <module name="ginkgo_xo" />
       </profile>
@@ -29,6 +30,7 @@
       <module name="ginkgo_commons" options="-parameters" />
       <module name="ginkgo_eureka" options="-parameters" />
       <module name="ginkgo_picture" options="-parameters" />
+      <module name="ginkgo_search" options="-parameters" />
       <module name="ginkgo_sms" options="-parameters" />
       <module name="ginkgo_utils" options="-parameters" />
       <module name="ginkgo_web" options="-parameters" />
